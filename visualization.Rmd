@@ -1,0 +1,106 @@
+---
+title: "cse-assignment-2"
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readr)
+library(tidyverse)
+df_ca <- read_csv("df_ca.csv")
+#View(df_ca)
+```
+
+```{r}
+df_ca_f <- df_ca %>%
+  drop_na()
+```
+
+```{r}
+summ_by_price <- df_ca_f %>%
+  group_by(price, hour) %>%
+  summarise(avg_rating = mean(rating))
+  
+```
+
+```{r}
+# Avg. rating across different price levels across hours of the day
+gr_scale = gray.colors(3, start = 0.3, end = 0.6, gamma = 2.2, alpha = NULL, rev = FALSE)
+ggplot(summ_by_price, aes(x=hour, y = avg_rating, group = price, color = price)) + 
+  geom_point(size = 2) + 
+  geom_line() + 
+  scale_colour_manual(values = c("$" = "#AEAEAE", "$$" = "#7A7A7A", "$$$" = "#4D4D4D")) + 
+  xlab('Hour') + 
+  ylab('Avg. Rating') + 
+  labs(color='Price') +
+  ggtitle('Change in avg. rating for different price levels') + 
+  theme_light()
+```
+
+```{r}
+df_ca_02 <- read_csv("df_ca_02.csv")
+
+df_ca_02 <- df_ca_02 %>%
+  drop_na()
+
+```
+
+```{r}
+#rev_len_by_rating <- df_ca_02 %>%
+df_ca_02 %>%
+  filter(rating != 0) %>%
+  ggplot(aes(x=reviewLength)) + 
+  geom_histogram(breaks=seq(0, 2500, by=1)) +
+  xlim(c(0, 500)) + 
+  #scale_x_continuous(breaks = seq(0, 1000, 5)) + 
+  facet_wrap(~rating) + 
+  xlab('Length of review') + 
+  ylab('Number of reviews') + 
+  ggtitle('Distribution of review lengths from 1 to 5 ratings') + 
+  theme_bw()
+```
+
+```{r}
+library(leaflet)
+
+# Create a leaflet map centered at Lisbon
+lisbon_map <- leaflet() %>%
+  setView(lng = -9.1393, lat = 38.7223, zoom = 12) %>%
+  addTiles()  # Use OpenStreetMap tiles
+
+# Display the map
+lisbon_map
+```
+
+```{r}
+# Load required libraries
+library(leaflet)
+library(dplyr)
+library(tidyr)
+
+# Read data from df_ca.csv
+data <- read.csv("df_ca.csv")
+
+# Process GPS coordinates
+data <- data %>%
+  mutate(gps = gsub("\\[|\\]", "", gps),   # Remove square brackets
+         latitude = sapply(strsplit(gps, ", "), function(x) as.numeric(x[1])),
+         longitude = sapply(strsplit(gps, ", "), function(x) as.numeric(x[2])))
+
+# Create leaflet map
+map <- leaflet(data) %>%
+  setView(lng = mean(data$longitude), lat = mean(data$latitude), zoom = 10) %>%
+  addTiles() %>%
+  addMarkers(lng = ~longitude, lat = ~latitude, popup = "GPS Point")
+
+# Display the map
+map
+
+```
+
+
