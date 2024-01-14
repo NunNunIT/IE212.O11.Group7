@@ -29,7 +29,9 @@ Nội dung
 ```
 git clone https://github.com/NunNunIT/IE212.O11.Group7.git  
 ```
-### B2: Vì dataset quá lớn nên có thể không clone 3 file dataset về được. Thực hiện các bước sau
+### B2: Tải dataset
+Vì dataset quá lớn nên có thể không clone 3 file dataset về được. Thực hiện các bước sau
+
 Truy cập: https://jmcauley.ucsd.edu/data/googlelocal/
 - users.clean.json.gz
 - reviews.clean.json.gz
