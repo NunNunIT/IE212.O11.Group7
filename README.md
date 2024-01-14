@@ -6,9 +6,9 @@
 * Nhóm sinh viên thực hiện: Nhóm 7
 
 ## Danh sách thành viên
-|STT | Họ tên | MSSV|
-|:---:|:-------------:|:-----:|
-|1. 	| Đặng Huỳnh Vĩnh Tân | 21520442
+|STT | Họ tên | MSSV| Chức vụ |
+|:---:|:-------------:|:-----:|:-----:|
+|1. 	| Đặng Huỳnh Vĩnh Tân | 21520442| Nhóm trưởng (Leader)|
 |2. 	| Nguyễn Thị Hồng Nhung | 21522436
 |3. 	| Nguyễn Viết Kha		|	21520949
 |4.  | Nguyễn Huy Hoàng | 21522093
@@ -23,7 +23,7 @@ Nội dung TEXT TEXT viết sau
 **Models**:
 Nội dung
 
-## Chạy - Running
+## Hướng dẫn cài đặt - Running
 ### B1: Clone repo 
 
 ```
