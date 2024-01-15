@@ -1,0 +1,12 @@
+.ipynb_checkpoints
+.vscode
+places.clean.json.gz
+reviews.clean.json.gz
+users.clean.json.gz
+
+model/.ipynb_checkpoints
+src/.ipynb_checkpoints
+
+data/places.clean.json.gz
+data/reviews.clean.json.gz
+data/users.clean.json.gz
