@@ -32,6 +32,8 @@ git clone https://github.com/NunNunIT/IE212.O11.Group7.git
 ### B2: Tải dataset
 Vì dataset quá lớn nên có thể không clone 3 file dataset về được. Thực hiện các bước sau
 
+**Lưu ý:** Phải tải về trong thư mục ```data```
+
 Truy cập: https://jmcauley.ucsd.edu/data/googlelocal/
 - users.clean.json.gz
 - reviews.clean.json.gz
@@ -46,6 +48,7 @@ Tìm kiếm Crtl + F:
 Google Local Reviews (2018) 
 ```
 Tải các file về
+
 
 ### B3: Truy cập vào file model.ipynb trong thư mục model
 
