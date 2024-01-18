@@ -1,0 +1,110 @@
+
+* {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    box-sizing: border-box;
+}
+.container {
+    margin: 0;
+    width: 100%;
+}
+
+.main-container {
+    width: 80%;
+    margin: auto;
+}
+
+@media (max-width: 1024px) {
+    .main-container {
+        width: 100%; /* Đặt chiều rộng là 100% khi màn hình dưới 1024px */
+    }
+}
+
+html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, blockquote, pre, code, em, img, small, strong, sub, sup, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+    font-family: 'Open Sans', 'Segoe UI', 'Tahoma', 'Verdana', 'Arial', 'Helvetica', 'sans-serif' !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #212529;
+}
+
+/* Áp dụng cho tất cả các bảng */
+table {
+    width: 100%; /* Đảm bảo bảng rộng bằng 100% của container */
+    border-collapse: collapse; /* Gộp các đường viền của ô */
+    margin: auto; /* Căn giữa bảng */
+}
+
+/* Kiểu cho header */
+th {
+    background-color: #043296; /* Màu header */
+    color: white; /* Màu chữ trong header */
+    font-weight: bold; /* Đậm chữ trong header */
+    padding: 10px; /* Khoảng cách giữa nội dung và đường viền */
+    text-align: center;
+}
+
+/* Kiểu cho dòng lẻ */
+tr:nth-child(even) {
+    background-color: #f1f1f1; /* Màu nền của dòng lẻ */
+}
+
+/* Kiểu cho dòng chẵn */
+tr:nth-child(odd) {
+    background-color: white; /* Màu nền của dòng chẵn */
+}
+
+/* Kiểu cho nội dung trong ô */
+td {
+    padding: 8px; /* Khoảng cách giữa nội dung và đường viền của ô */
+}
+
+.app-header-container {
+    position: relative;
+    width: 100%;
+    height: 270px;
+    background-image: url("./background-photo.png");
+    background-color: #003262;
+    background-position: top;
+    background-size: cover;
+    padding: 40px;
+}
+
+.app-header-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0) 85%, rgba(255, 255, 255, 1) 100%);
+}
+
+.app-header {
+    text-align: center;
+    color: #fff;
+}
+
+#SV_info {
+    border-collapse: collapse;
+}
+
+#SV_info th,
+#SV_info td {
+    text-align: center;
+    padding: 8px;
+}
+
+#SV_info td:nth-child(2) {
+    text-align: left;
+}
+
+.blue-text {
+    color: #043296;
+}
+
+.bold-text {
+    font-weight: bold;
+}
+
