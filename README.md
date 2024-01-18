@@ -54,23 +54,14 @@ Tải các file về
 
 Chạy file
 
-### B4: Visualization bằng RStudio
-- Cài đặt RSTUDIO
-    - B1: Truy cập https://cran.r-project.org/ và lựa chọn phiên bản phù hợp
-    - B2: Truy cập https://posit.co/download/rstudio-desktop/ và lựa chọn phiên bản phù hợp
-    - B3: Chạy phần mềm RStudio
-    - B4: Open File -> Chọn file Visualization.Rmd
-    - B5: Tại tab console log, copy đoạn mã dưới đây và enter
+### B4: Visualization
+      Cài đặt packages cần thiết
       ```
-      install.packages("readr")
-      install.packages("tidyverse")
-      install.packages("rkafka")
-      install.packages("leaflet")
-      install.packages("googleway")
-      install.packages("ggmap")
-      install.packages("ggimage")
+      pip install -r requirements.txt
       ```
-    - B5: Chọn Knit to HTML (Biểu tượng cuộn len màu xanh dương) và đợi
+      ```
+      python dashTemplate.py
+      ```
 
 ## Sản phẩm - 
 File report
