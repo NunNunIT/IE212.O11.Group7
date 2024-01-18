@@ -12,12 +12,6 @@ years = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018]
 # Ép cột 'reviewTime' thành kiểu datetime
 df['reviewTime'] = pd.to_datetime(df['reviewTime'])
 
-df2 = df.copy()
-df2['gps'] = df['gps'].apply(lambda x: ast.literal_eval(x))
-df2['lat'] = df2['gps'].apply(lambda x: x[0])
-df2['lon'] = df2['gps'].apply(lambda x: x[1])
-df2 = df2.drop(columns=['gps'])
-
 app = Dash(__name__)
 
 app.layout = html.Div([
@@ -25,8 +19,8 @@ app.layout = html.Div([
         html.H1(children='Title of Dash App', style={'textAlign': 'center'}),
         dash_table.DataTable(
             id='table',
-            columns=[{'name': col, 'id': col} for col in df2.columns],
-            data=df2.to_dict('records'),
+            columns=[{'name': col, 'id': col} for col in df.columns],
+            data=df.to_dict('records'),
             page_size=10,
             style_table={'height': '400px'},  # Điều chỉnh chiều cao của bảng
             style_cell={'maxWidth': 100, 'overflow': 'ellipsis', 'textOverflow': 'ellipsis', 'whiteSpace': 'nowrap'},
