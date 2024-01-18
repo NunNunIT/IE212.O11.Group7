@@ -1,5 +1,6 @@
 from dash import Dash, html, dcc, callback, Output, Input
 from dash import dash_table
+import ast
 import plotly.express as px
 import pandas as pd
 
@@ -11,6 +12,12 @@ years = [2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018]
 # Ép cột 'reviewTime' thành kiểu datetime
 df['reviewTime'] = pd.to_datetime(df['reviewTime'])
 
+df2 = df.copy()
+df2['gps'] = df['gps'].apply(lambda x: ast.literal_eval(x))
+df2['lat'] = df2['gps'].apply(lambda x: x[0])
+df2['lon'] = df2['gps'].apply(lambda x: x[1])
+df2 = df2.drop(columns=['gps'])
+
 app = Dash(__name__)
 
 app.layout = html.Div([
@@ -18,8 +25,8 @@ app.layout = html.Div([
         html.H1(children='Title of Dash App', style={'textAlign': 'center'}),
         dash_table.DataTable(
             id='table',
-            columns=[{'name': col, 'id': col} for col in df.columns],
-            data=df.to_dict('records'),
+            columns=[{'name': col, 'id': col} for col in df2.columns],
+            data=df2.to_dict('records'),
             page_size=10,
             style_table={'height': '400px'},  # Điều chỉnh chiều cao của bảng
             style_cell={'maxWidth': 100, 'overflow': 'ellipsis', 'textOverflow': 'ellipsis', 'whiteSpace': 'nowrap'},
@@ -44,12 +51,15 @@ app.layout = html.Div([
                 style={'width': '250px', 'padding': '0 12px'}
             ),
         ], style={'display': 'inline-block'}),
-        dcc.Graph(id='graph-content')
+        dcc.Graph(id='graph-content'),
+        html.H1("Bản đồ với Dash và Plotly Express"),
+        dcc.Graph(id='map-content'),
     ], style={'width': '80%', 'margin': 'auto'})  # Điều chỉnh max-width của container div
 ])
 
 @callback(
-    Output('graph-content', 'figure'),
+    [Output('graph-content', 'figure'),
+     Output('map-content', 'figure')],
     [Input('dropdown-year', 'value'),
      Input('dropdown-reviewerName', 'value')]
 )
@@ -72,11 +82,26 @@ def update_graph(value_year, value_reviewerName):
     else:
         dff = df.copy()
 
-    return px.histogram(dff, x='rating', title=title,
+    histogram_figure = px.histogram(dff, x='rating', title=title,
                        labels={'x': 'Rating', 'y': 'Số lượng đánh giá'},
                        color_discrete_sequence=['#043296'],
-                       category_orders=dict(rating=["1", "2", "3", "4", "5"]))  # Số lượng bins cho rating
+                       category_orders=dict(rating=["1", "2", "3", "4", "5"])) 
 
+    df2 = dff.copy()
+    df2['gps'] = dff['gps'].apply(lambda x: ast.literal_eval(x))
+    df2['lat'] = df2['gps'].apply(lambda x: x[0])
+    df2['lon'] = df2['gps'].apply(lambda x: x[1])
+    df2 = df2.drop(columns=['gps'])
+
+    map_figure = px.scatter_mapbox(df2,
+                             lat='lat', 
+                             lon='lon',
+                             text='gPlusPlaceId',
+                             mapbox_style='carto-positron',  # Chọn kiểu bản đồ (có thể là 'open-street-map', 'stamen-terrain', 'mapbox/dark',...)
+                             zoom=4  # Điều chỉnh mức độ zoom
+                            )
+    
+    return histogram_figure, map_figure
 
 if __name__ == '__main__':
     app.run(debug=True)
