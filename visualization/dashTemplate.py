@@ -79,43 +79,99 @@ app.layout = html.Div([
                 id='dropdown-reviewerName',
                 style={'width': '250px', 'padding': '0 12px'}
             ),
+        ], style={'display': 'inline-block', 'margin-right':'20px'}),
+
+        html.Div([
+            html.Label('Categories'),
+            dcc.Dropdown(
+                options=[{'label': categories, 'value': categories} for categories in ['All'] + df['categories'].unique().tolist()],
+                value='All',
+                id='dropdown-categories',
+                style={'width': '350px', 'padding': '0 15px'}
+            ),
         ], style={'display': 'inline-block'}),
         dcc.Graph(id='graph-content'),
         html.H1("Bản đồ với Dash và Plotly Express"),
         dcc.Graph(id='map-content'),
     ], className='main-container')
 ], className='container')
+@app.callback(
+    Output('dropdown-categories', 'options'),
+    Input('dropdown-year', 'value'),
+    Input('dropdown-reviewerName', 'value')
+)
+def update_categories_options(value_year, value_reviewerName):
+    if value_year == 'All' and value_reviewerName == 'All':
+        categories = ['All'] + df['categories'].unique().tolist()
+    elif value_year == 'All':
+        filtered_categories = df[df['reviewerName'] == value_reviewerName]['categories'].unique().tolist()
+        if len(filtered_categories) > 0:
+            categories = ['All'] + filtered_categories
+        else:
+            categories = ['All']
+    elif value_reviewerName == 'All':
+        filtered_categories = df[df['reviewTime'].dt.year == value_year]['categories'].unique().tolist()
+        if len(filtered_categories) > 0:
+            categories = ['All'] + filtered_categories
+        else:
+            categories = ['All']
+    else:
+        filtered_categories = df[(df['reviewTime'].dt.year == value_year) & (df['reviewerName'] == value_reviewerName)]['categories'].unique().tolist()
+        if len(filtered_categories) > 0:
+            categories = ['All'] + filtered_categories
+        else:
+            categories = ['All']
+
+    options = [{'label': category, 'value': category} for category in categories]
+
+    return options
 
 
-@callback(
+@app.callback(
+    Output('dropdown-reviewerName', 'options'),
+    Input('dropdown-year', 'value')
+)
+def update_reviewername_options(dropdown_year):
+    if dropdown_year == 'All':
+        reviewer_name = ['All'] + df['reviewerName'].unique().tolist()
+    else:
+        filtered_reviewers = df[df['reviewTime'].dt.year == dropdown_year]['reviewerName'].unique().tolist()
+        if len(filtered_reviewers) > 0:
+            reviewer_name = ['All'] + filtered_reviewers
+        else:
+            reviewer_name = ['All']
+
+    options = [{'label': name, 'value': name} for name in reviewer_name]
+
+    return options
+
+@app.callback(
     [Output('graph-content', 'figure'),
      Output('map-content', 'figure')],
     [Input('dropdown-year', 'value'),
-     Input('dropdown-reviewerName', 'value')]
+     Input('dropdown-reviewerName', 'value'),
+     Input('dropdown-categories', 'value')]
 )
-
-def update_graph(value_year, value_reviewerName):
+def update_graph(value_year, value_reviewerName, value_categories):
     title = 'Số lượng đánh giá'
 
-    if value_year != 'All' and value_reviewerName != 'All':
-        dff = df[(df['reviewTime'].dt.year == value_year) & (df['reviewerName'] == value_reviewerName)]
-        title += f' theo năm {value_year} của {value_reviewerName}'
+    dff = df.copy()  # Tạo một bản sao của DataFrame ban đầu
 
-    elif value_year != 'All':
-        dff = df[df['reviewTime'].dt.year == value_year]
+    if value_year != 'All':
+        dff = dff[dff['reviewTime'].dt.year == value_year]
         title += f' theo năm {value_year}'
 
-    elif value_reviewerName != 'All':
-        dff = df[df['reviewerName'] == value_reviewerName]
+    if value_reviewerName != 'All':
+        dff = dff[dff['reviewerName'] == value_reviewerName]
         title += f' của {value_reviewerName}'
 
-    else:
-        dff = df.copy()
+    if value_categories != 'All':
+        dff = dff[dff['categories'] == value_categories]
 
     histogram_figure = px.histogram(dff, x='rating', title=title,
-                       labels={'x': 'Rating', 'y': 'Số lượng đánh giá'},
-                       color_discrete_sequence=['#043296'],
-                       category_orders=dict(rating=["1", "2", "3", "4", "5"])) 
+                                    labels={'x': 'Rating', 'y': 'Số lượng đánh giá'},
+                                    color_discrete_sequence=['#043296'],
+                                    category_orders=dict(rating=["1", "2", "3", "4", "5"]))
 
     df2 = dff.copy()
     df2['gps'] = dff['gps'].apply(lambda x: ast.literal_eval(x))
@@ -124,24 +180,25 @@ def update_graph(value_year, value_reviewerName):
     df2 = df2.drop(columns=['gps'])
 
     map_figure = px.scatter_mapbox(df2,
-                             lat='lat', 
-                             lon='lon',
-                             text='gPlusPlaceId',
-                             mapbox_style='carto-positron',  # Chọn kiểu bản đồ (có thể là 'open-street-map', 'stamen-terrain', 'mapbox/dark',...)
-                             color_discrete_sequence=['#ff0000'],  # Màu đỏ
-                            #  size=2  # Điều chỉnh mức độ zoom
-                            )
-    
+                                   lat='lat',
+                                   lon='lon',
+                                   text='gPlusPlaceId',
+                                   mapbox_style='carto-positron',
+                                   color_discrete_sequence=['#ff0000'])
+
     map_figure.update_layout(
         mapbox=dict(
-            style='carto-positron',  # Kiểu bản đồ
+            style='carto-positron',
             zoom=4
         ),
-        autosize=True,  # Tự động điều chỉnh kích thước để chiếm hết không gian hiển thị
-        margin=dict(l=0, r=0, t=0, b=0),  # Đặt lề về 0 để loại bỏ khoảng trắng xung quanh bản đồ
+        autosize=True,
+        margin=dict(l=0, r=0, t=0, b=0),
     )
-    
+
     return histogram_figure, map_figure
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
