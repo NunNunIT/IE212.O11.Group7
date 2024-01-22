@@ -7,6 +7,10 @@ import pickle
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import csv
+import time
+import threading
+from watchdog.observers import Observer
+from watchdog.events import FileSystemEventHandler
 import plotly.graph_objects as go
 
 
@@ -187,7 +191,6 @@ def update_idplace(value_name):
     return idplace
 
 
-
 @app.callback(
     Output('dropdown-categories', 'options'),
     [Input('dropdown-year', 'value')]
@@ -230,6 +233,7 @@ def update_graph(value_year, value_categories):
         title += f' theo năm {value_year}'
     if value_categories != 'All':
         dff = dff[dff['categories'].str.contains(value_categories)]
+        title += f' và {value_categories}'
 
     histogram_figure = px.histogram(dff, x='rating', title=title,
                                     labels={'x': 'Rating', 'y': 'Số lượng đánh giá'},
@@ -345,19 +349,7 @@ def recommendation(placeid):
     df_result_updated = pd.read_csv('result.csv')
     data_updated = df_result_updated.to_dict('records')
     return data_updated
-# @app.callback(
-#     Output('output-value', 'children'),
-#     [Input('button-get-value', 'n_clicks'),
-#      Input('dropdown-idplace', 'value')],
-# )
-# def get_input_placeid(n_clicks, input_value):
-#     if n_clicks > 0:
-#         print("Xin vui lòng đợi...")
-#         data_updated = recommendation(input_value)
-#         return 'Success!'
-#     else:
-#         return 'Xin nhập giá trị'
-#
+
 
 @app.callback(
     Output('table_result', 'data'),
@@ -385,47 +377,7 @@ def update_data(n_clicks, input_value):
     [Input('button-get-value', 'n_clicks')],
     [Input('table_result', 'data')]
 )
-# def update_map(n_clicks, data):
-#     # Đọc dữ liệu từ DataFrame df_result (giả sử cột GPS và Place Name chứa thông tin vị trí và tên địa điểm)
-#     df_result = pd.DataFrame(data).copy()
-#     gps_data = df_result['GPS']
-#     place_name_data = df_result['Place Name']
-#
-#     # Tạo DataFrame mới chứa thông tin vị trí và tên địa điểm
-#     df_location = pd.DataFrame({'GPS': gps_data, 'Place Name': place_name_data})
-#
-#     # Chia cột GPS thành cột Latitude và Longitude
-#     df_location[['Latitude', 'Longitude']] = df_location['GPS'].str.extract('\[(.*?),\s(.*?)\]', expand=True)
-#
-#     # Chuyển đổi cột 'Longitude' và 'Latitude' sang kiểu dữ liệu số
-#     df_location['Longitude'] = pd.to_numeric(df_location['Longitude'])
-#     df_location['Latitude'] = pd.to_numeric(df_location['Latitude'])
-#
-#     # Tạo cột 'Color' để xác định màu sắc cho các điểm
-#     df_location['Color'] = '#ff0000'  # Mặc định là màu đỏ cho tất cả các điểm
-#     df_location.loc[0, 'Color'] = '#00ff00'  # Điểm đầu tiên có màu xanh
-#
-#     # Vẽ bản đồ bằng px.scatter_mapbox
-#     fig = px.scatter_mapbox(
-#         df_location,
-#         lat="Latitude",
-#         lon="Longitude",
-#         text="Place Name",
-#         mapbox_style='carto-positron',
-#         color="Color",  # Sử dụng cột 'Color' để xác định màu sắc
-#     )
-#
-#     # Cấu hình layout cho bản đồ
-#     fig.update_layout(
-#         mapbox=dict(
-#             style='carto-positron',
-#             zoom=4
-#         ),
-#         autosize=True,
-#         margin=dict(l=0, r=0, t=0, b=0),
-#     )
-#
-#     return fig
+
 
 
 def update_map(n_clicks, data):
