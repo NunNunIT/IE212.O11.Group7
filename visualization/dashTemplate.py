@@ -70,25 +70,6 @@ app.layout = html.Div([
         #     },
         # ),
         html.Br(),
-        html.Div([
-            html.Label('Year'),
-            dcc.Dropdown(
-                options=[{'label': str(year), 'value': year} for year in ['All'] + years],
-                value='All',
-                id='dropdown-year',
-                style={'width': '250px', 'padding': '0 12px'}
-            ),
-        ], style={'display': 'inline-block', 'margin-right': '20px'}),
-
-        html.Div([
-            html.Label('Categories'),
-            dcc.Dropdown(
-                options=[{'label': categories, 'value': categories} for categories in ['All'] + df['categories'].unique().tolist()],
-                value='All',
-                id='dropdown-categories',
-                style={'width': '350px', 'padding': '0 15px'}
-            ),
-        ], style={'display': 'inline-block'}),
         dcc.Graph(id='graph-content'),
         html.H1("Map with all data"),
         dcc.Graph(id='map-content'),

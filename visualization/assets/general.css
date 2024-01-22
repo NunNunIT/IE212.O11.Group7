@@ -11,14 +11,8 @@
 }
 
 .main-container {
-    width: 80%;
     margin: auto;
-}
-
-@media (max-width: 1024px) {
-    .main-container {
-        width: 100%; /* Đặt chiều rộng là 100% khi màn hình dưới 1024px */
-    }
+    margin: 0 10px;
 }
 
 html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, blockquote, pre, code, em, img, small, strong, sub, sup, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
