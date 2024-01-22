@@ -92,10 +92,17 @@ td {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    height: 100vh; 
+    height: 100vh;
     background: black;
-    /* Optional: Set the height to 100% of the viewport height */
+    background-image: url("./background-photo.gif"); /* The image used */
+    background-color: black; /* Used if the image is unavailable */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
 }
+
+
+
 
 .title-introduct {
     color: white;
