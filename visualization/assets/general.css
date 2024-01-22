@@ -5,18 +5,13 @@
     border: 0;
     box-sizing: border-box;
 }
-.container {
-    margin: 0;
-    width: 100%;
-}
-
-.main-container {
-    margin: auto;
-    margin: 0 10px;
-}
 
 html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, blockquote, pre, code, em, img, small, strong, sub, sup, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
     font-family: 'Open Sans', 'Segoe UI', 'Tahoma', 'Verdana', 'Arial', 'Helvetica', 'sans-serif' !important;
+}
+
+html {
+    background: #f6f8ff;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -102,3 +97,19 @@ td {
     font-weight: bold;
 }
 
+.main-container .centered-heading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* height: 100vh;  */
+    /* Optional: Set the height to 100% of the viewport height */
+}
+
+.main-container .introduct-heading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; 
+    background: black;
+    /* Optional: Set the height to 100% of the viewport height */
+}

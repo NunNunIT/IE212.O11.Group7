@@ -1,0 +1,19 @@
+.dashboard-container {
+    background-color: #fff;
+    padding: 0 2%;
+}
+
+.total-item>label {
+    font-size: 24px;
+    /* font-weight: bold; */
+}
+
+.total-item>div {
+    font-size: 54px;
+    font-weight: bold;
+}
+
+.contain-layout {
+    /* background-color: #fff; */
+    /* border-radius: 8px; */
+}

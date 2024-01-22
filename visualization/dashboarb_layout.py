@@ -7,19 +7,24 @@ import plotly.graph_objects as go
 from dash.exceptions import PreventUpdate
 from data_utils import *
 
-# def filter_by_selecttion(dateframe_input, select_year = 'All', select_place = 'All'):
-def filter_by_selection(dateframe_input, select_year = 'All'):
+def filter_by_selecttion(dateframe_input, select_year = 'All', select_place = 'All'):
     filtered_df = dateframe_input.copy()
-    # if select_year != 'All' and select_place != 'All':
+    if select_year != 'All' and select_place != 'All':
         # Lọc DataFrame dựa trên cả hai điều kiện
-        # filtered_df = filtered_df[(filtered_df['year'] == select_year) & (filtered_df['place'] == select_place)]
+        filtered_df = filtered_df[(filtered_df['year'] == select_year) & (filtered_df['gPlusPlaceId'] == select_place)]
     if select_year != 'All':
-        filtered_df = filtered_df(filtered_df['year'] == select_year)
-    # elif select_place != 'All':
-        # filtered_df = filtered_df[(filtered_df['place'] == select_place)
+        filtered_df = filtered_df[filtered_df['year'] == select_year]
+    elif select_place != 'All':
+        filtered_df = filtered_df[filtered_df['gPlusPlaceId'] == select_place]
                             
     return filtered_df
 
+def create_introduct_layout():
+    return html.Div([
+                html.H1("Advancing Data Science and Technology", className='title-introduct'),
+                html.P("to deliver financial access for all"),
+                dcc.Link("See how it works", href="#"),
+            ]) 
 
 def create_detail_table_layout(): 
     return  html.Div([
@@ -37,11 +42,10 @@ def create_detail_table_layout():
                         'textAlign': 'center'
                     },
                 )
-            ])
+            ], className='contain-layout')
 
 def create_dashboard_option_layout():
     return html.Div([
-                html.H1("Dashboard"),
                 html.Div([
                     html.Label('Year'),
                     dcc.Dropdown(
@@ -50,28 +54,37 @@ def create_dashboard_option_layout():
                         value= 'All',  # Giá trị mặc định là All
                         placeholder='Chọn năm',  # Nhãn placeholder
                     ),
-                ]),
+                ], className='contain-layout'),
+                html.Div([
+                    html.Label('Places'),
+                    dcc.Dropdown(
+                        id='place-dropdown',
+                        # options=[],
+                        value= 'All',  # Giá trị mặc định là All
+                        placeholder='Chọn địa điểm',  # Nhãn placeholder
+                    ),
+                ], className='contain-layout'),
             ])
 
-def create_dashboard_total_layout(df):
+def create_dashboard_total_layout():
     return html.Div([
                 html.Div([
                     html.Div([
                     html.Label("Ratings"),
-                    html.Div(id='total-ratings', children=len(df))
-                    ]),
+                    html.Div(id='total-ratings', children=0)
+                    ], className = 'total-item contain-layout'),
                     html.Div([
                     html.Label("Reviews"),
-                    html.Div(id='total-reviews', children=(df['reviewText'].count()))
-                    ]),
+                    html.Div(id='total-reviews', children=0)
+                    ], className = 'total-item contain-layout'),
                     html.Div([
                         html.Label("Places"),
-                        html.Div(id='total-businesses', children=len(df['gPlusPlaceId'].unique()))
-                    ]),
+                        html.Div(id='total-places', children=0)
+                    ], className = 'total-item contain-layout'),
                     html.Div([
                         html.Label("User"),
-                        html.Div(id='total-user', children=len(df['gPlusUserId'].unique()))
-                    ]),
+                        html.Div(id='total-user', children=0)
+                    ], className = 'total-item contain-layout'),
                 ], style={'columnCount': 4}),
             ])
 
