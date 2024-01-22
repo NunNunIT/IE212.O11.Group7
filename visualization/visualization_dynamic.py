@@ -43,9 +43,9 @@ def update_dataframe():
         if update_time > last_update_time:
             last_update_time = update_time
             # Chuyển đổi cột gps thành 2 cột lat, longitude
-            lat_long = extract_lat_long(api_data['gps'])
-            df_new['latitude'] = lat_long['latitude']
-            df_new['longitude'] = lat_long['longitude']
+            # lat_long = extract_lat_long(api_data['gps'])
+            # df_new['latitude'] = lat_long['latitude']
+            # df_new['longitude'] = lat_long['longitude']
 
             # Convert Unix timestamps to datetime objects
             df_new['review_date'] = pd.to_datetime(df_new['unixReviewTime'], unit='s')
