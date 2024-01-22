@@ -22,9 +22,9 @@ def filter_by_selecttion(dateframe_input, select_year = 'All', select_place = 'A
 def create_introduct_layout():
     return html.Div([
                 html.H1("Advancing Data Science and Technology", className='title-introduct'),
-                html.P("to deliver financial access for all"),
-                dcc.Link("See how it works", href="#"),
-            ]) 
+                html.P("to deliver financial access for all", className='subject-text'),
+                html.A("See how it works", href="#see-here", className='button'),
+            ], className='introduct-heading') 
 
 def create_detail_table_layout(): 
     return  html.Div([
@@ -54,7 +54,7 @@ def create_dashboard_option_layout():
                         value= 'All',  # Giá trị mặc định là All
                         placeholder='Chọn năm',  # Nhãn placeholder
                     ),
-                ], className='contain-layout'),
+                ], className = 'dropdown-item'),
                 html.Div([
                     html.Label('Places'),
                     dcc.Dropdown(
@@ -63,8 +63,8 @@ def create_dashboard_option_layout():
                         value= 'All',  # Giá trị mặc định là All
                         placeholder='Chọn địa điểm',  # Nhãn placeholder
                     ),
-                ], className='contain-layout'),
-            ])
+                ], className = 'dropdown-item'),
+            ], className='contain-layout')
 
 def create_dashboard_total_layout():
     return html.Div([
@@ -72,20 +72,20 @@ def create_dashboard_total_layout():
                     html.Div([
                     html.Label("Ratings"),
                     html.Div(id='total-ratings', children=0)
-                    ], className = 'total-item contain-layout'),
+                    ], className = 'total-item'),
                     html.Div([
                     html.Label("Reviews"),
                     html.Div(id='total-reviews', children=0)
-                    ], className = 'total-item contain-layout'),
+                    ], className = 'total-item'),
                     html.Div([
                         html.Label("Places"),
                         html.Div(id='total-places', children=0)
-                    ], className = 'total-item contain-layout'),
+                    ], className = 'total-item'),
                     html.Div([
                         html.Label("User"),
                         html.Div(id='total-user', children=0)
-                    ], className = 'total-item contain-layout'),
-                ], style={'columnCount': 4}),
+                    ], className = 'total-item'),
+                ], className='contain2-layout'),
             ])
 
 def calculate_reviews_dashboarb(dataframe_input):
@@ -124,7 +124,7 @@ def draw_chart_reviews_dashboard(dataframe_input):
 
     fig = px.bar(statistics_df, x='year', y=[f'{i}_star' for i in range(6)],
               labels={'value': 'Số lượng', 'variable': 'Rating'},
-              title='Combined Plot: Distribution of Ratings, Average Rating, and Total Reviews Over Years',
+              title='Distribution of Ratings, Average Rating, and Total Reviews Over Years',
               color_discrete_sequence=['#fff363', '#fde725', '#9fda3a', '#1fa187', '#004ebe', '#002f72'],)
                 
 
@@ -212,6 +212,10 @@ def draw_chart_reviews_by_star_dashboard(dataframe_input):
         showarrow=False,
         font=dict(size=24, color='#fbb040',)
     )
+
+    # fig.update_layout(
+    #     title_font=dict(weight='bold'),
+    # )
     
     return fig
 

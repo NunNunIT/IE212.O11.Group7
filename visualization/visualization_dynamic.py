@@ -63,8 +63,8 @@ app = Dash(__name__)
 
 # Layout của Dash App
 app.layout = html.Div([
-    html.Div([], className='introduct-heading'),
-    html.H1("Dashboard", className="centered-heading"),
+    create_introduct_layout(),
+    html.H1("Dashboard", className="centered-heading", id="see-here"),
     html.Div([
         create_dashboard_option_layout(),
         create_dashboard_total_layout(),

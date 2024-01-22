@@ -1,6 +1,6 @@
 .dashboard-container {
     background-color: #fff;
-    padding: 0 2%;
+    padding: 20px 2%;
 }
 
 .total-item>label {
@@ -9,11 +9,41 @@
 }
 
 .total-item>div {
-    font-size: 54px;
+    font-size: 48px;
     font-weight: bold;
 }
 
 .contain-layout {
-    /* background-color: #fff; */
-    /* border-radius: 8px; */
+    display: flex;
+    justify-content: space-between;  /* Các thành phần sẽ được căn giữa và cách nhau ra xa nhau */
+    align-items: center;  /* Căn giữa theo chiều dọc */
+    gap: 20px;
+    padding-top: 12px;
+    /* margin: 0 auto */
+}
+
+/* Định dạng dropdown để chiếm không gian rộng đầy đủ */
+.contain-layout>div {
+    width: 100%;
+}
+
+/* Optional: Thêm media query để điều chỉnh kiểu dáng cho các màn hình nhỏ hơn */
+@media only screen and (max-width: 600px) {
+    .contain-layout {
+        flex-direction: column;  /* Nếu màn hình nhỏ hơn, chuyển sang hiển thị dọc */
+    }
+}
+
+.contain2-layout {
+    display: flex;
+    justify-content: space-between;  /* Các thành phần sẽ được căn giữa và cách nhau ra xa nhau */
+    align-items: center;  /* Căn giữa theo chiều dọc */
+    gap: 20px;
+    padding-top: 12px;
+    margin: 0 auto
+}
+
+/* Định dạng dropdown để chiếm không gian rộng đầy đủ */
+.contain2-layout>div {
+    /* width: 100%; */
 }
