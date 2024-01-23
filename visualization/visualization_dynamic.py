@@ -250,17 +250,6 @@ def update_chart_categories_dashboarb(n_intervals, value_year = 'All', value_cat
     histogram_figure, map_figure = update_graph(df)
     return histogram_figure, map_figure
 
-# @app.callback(
-#     [Output('dropdown-idplace', 'options')],
-#     [Input('interval-component', 'n_intervals')],
-#     allow_duplicate=True
-# )
-# def update_dropdown_placeID(n_intervals):
-#     updated_df = update_dataframe()
-#     dropdown_placeID_options = [{'label': 'All', 'value': 'All'}] + [{'label': placeid, 'value': placeid} for placeid in updated_df['gPlusPlaceId'].unique()]
-#     return [dropdown_placeID_options]
-
-
 @app.callback(
     Output('dropdown-placename', 'options'),
     [Input('interval-component', 'n_intervals')],
@@ -344,11 +333,11 @@ def update_dropdown_options(n_clicks, selected_value):
     dropdown_place_options = [{'label': 'All', 'value': 'All'}] + [{'label': str(place) + str(' (') + str(updated_df[updated_df['gPlusPlaceId'] == place].shape[0]) + str(')'), 'value': place} for place in updated_df['gPlusPlaceId'].unique()]
     return [dropdown_place_options]  # Đặt danh sách trong dấu ngoặc vuông để trả về một danh sách
 
-@app.callback(
-    [Output('dropdown-idplace', 'value'),
-     Output('dropdown-idplace', 'options')],
-    [Input('dropdown-place-1', 'value')]
-)
+# @app.callback(
+#     [Output('dropdown-idplace', 'value'),
+#      Output('dropdown-idplace', 'options')],
+#     [Input('dropdown-place-1', 'value')]
+# )
 
 
 # Khởi chạy Dash App

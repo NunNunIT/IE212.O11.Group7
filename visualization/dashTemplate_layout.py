@@ -8,7 +8,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import csv
 
-
 def create_Year_layout():
     return html.Div([
             html.Label('Year'),
@@ -36,7 +35,7 @@ def create_Placename_layout():
                 value='All',
                 id='dropdown-placename',
             ),
-        ], className = 'dropdown-item')
+        ], className='dropdown-item')
 
 def create_IDPlace_layout():
     return html.Div([
@@ -45,23 +44,25 @@ def create_IDPlace_layout():
                 value='All',
                 id='dropdown-idplace',
             ),
-        ], className = 'dropdown-item')
+        ], className='dropdown-item')
 
 df_result = pd.read_csv('result.csv',encoding='latin-1')
 def create_dashtable_result():
+    df_result_filtered = df_result.drop(columns=["Index", "Reviewer Name", "Place_ID"])
+    df_result_filtered = df_result_filtered.drop(df_result_filtered.index[0])
     return html.Div([
             html.Div([
                 dcc.Graph(id='map-result', config={'displayModeBar': False})
             ]),
             # Điều chỉnh kích thước bản đồ
-
             html.Div([
                 dash_table.DataTable(
                     id='table_result',
-                    columns=[{'name': col, 'id': col} for col in df_result.columns],
-                    data=df_result.to_dict('records'),
+                    columns=[{'name': col, 'id': col} for col in df_result_filtered.columns],
+                    data=df_result_filtered.to_dict('records'),
                     style_table={'height': '400px'},
-                    style_cell={'maxWidth': 100, 'overflow': 'ellipsis', 'textOverflow': 'ellipsis', 'whiteSpace': 'nowrap'},
+                    style_cell={'maxWidth': 100, 'overflow': 'ellipsis', 'textOverflow': 'ellipsis',
+                                'whiteSpace': 'nowrap'},
                     style_header={
                         'backgroundColor': '#043296',
                         'fontWeight': 'bold',
@@ -89,8 +90,6 @@ def update_idplace(df_placename, value_name):
         else:
             idplace = 'All'
     return idplace
-
-
 
 def update_categories_options(df, value_year):
     if value_year == 'All':
@@ -125,28 +124,31 @@ def filter_by_selecttion1(dateframe_input, value_year='All', value_categories='A
 
     return filtered_df
 def update_graph(df):
-    title = 'Số lượng đánh giá'
-
-    dff = df.copy()  # Tạo một bản sao của DataFrame ban đầu
-
+    title = 'Number of reviews'
+    dff = df.copy()
     histogram_figure = px.histogram(dff, x='rating', title=title,
                                     labels={'x': 'Rating', 'y': 'Số lượng đánh giá'},
                                     color_discrete_sequence=['#043296'],
                                     category_orders=dict(rating=["1", "2", "3", "4", "5"]))
-
     df2 = dff.copy()
     df2['gps'] = dff['gps'].apply(lambda x: ast.literal_eval(x))
     df2['lat'] = df2['gps'].apply(lambda x: x[0])
     df2['lon'] = df2['gps'].apply(lambda x: x[1])
+    df2['placename'] = df2['gPlusPlaceId'].apply(find_name2)
     df2 = df2.drop(columns=['gps'])
 
     map_figure = px.scatter_mapbox(df2,
                                    lat='lat',
                                    lon='lon',
-                                   text='gPlusPlaceId',
+                                   text='placename',
                                    mapbox_style='carto-positron',
-                                   color_discrete_sequence=['#ff0000'])
-
+                                   color_discrete_sequence=['#002f72'])
+    map_figure.update_traces(
+        marker=dict(
+            size=10
+        ),
+        textposition='top center'
+    )
     map_figure.update_layout(
         mapbox=dict(
             style='carto-positron',
@@ -157,19 +159,11 @@ def update_graph(df):
     )
 
     return histogram_figure, map_figure
-
-
-# def find_name(place_id):
-#     input_file_path = './place_name_dict/place_name_dict.pkl'
-#     # Đọc place_name_dict từ tệp
-#     with open(input_file_path, 'rb') as file:
-#         place_name_dict = pickle.load(file)
-#     place_name = place_name_dict.get(place_id)
-#     return place_name
+# Import file
 input_file_path = './place_name_dict.pkl'
 with open(input_file_path, 'rb') as file:
     place_name_dict = pickle.load(file)
-
+#Create dictionary
 dict_placename = {}
 def find_name2(place_id):
     # Đọc place_name_dict từ tệp
@@ -261,8 +255,6 @@ def recommendation(placeid):
     data_updated = df_result_updated.to_dict('records')
     return data_updated
 
-
-
 def update_data(df_result,n_clicks, input_value):
     if n_clicks > 0:
         print("Xin vui lòng đợi...")
@@ -271,30 +263,21 @@ def update_data(df_result,n_clicks, input_value):
         return data_updated
     else:
         return df_result.to_dict('records')
-
-
 def update_map(n_clicks, data):
-    # Đọc dữ liệu từ DataFrame df_result (giả sử cột GPS và Place Name chứa thông tin vị trí và tên địa điểm)
     df_result = pd.DataFrame(data).copy()
     gps_data = df_result['GPS']
     place_name_data = df_result['Place Name']
-
-    # Tạo DataFrame mới chứa thông tin vị trí và tên địa điểm
     df_location = pd.DataFrame({'GPS': gps_data, 'Place Name': place_name_data})
-
     # Chia cột GPS thành cột Latitude và Longitude
     df_location[['Latitude', 'Longitude']] = df_location['GPS'].str.extract('\[(.*?),\s(.*?)\]', expand=True)
-
     # Chuyển đổi cột 'Longitude' và 'Latitude' sang kiểu dữ liệu số
     df_location['Longitude'] = pd.to_numeric(df_location['Longitude'])
     df_location['Latitude'] = pd.to_numeric(df_location['Latitude'])
-
     # Tạo cột 'Color' để xác định màu sắc cho các điểm
     df_location['Color'] = 'others'  # Mặc định là màu đỏ cho tất cả các điểm
     df_location.loc[0, 'Color'] = 'target'  # Điểm đầu tiên có màu xanh
     # Định nghĩa bản đồ màu sắc
-    color_discrete_map = {'target': '#00ff00', 'others': '#ff0000'}
-
+    color_discrete_map = {'target': '#f86134', 'others': '#002f72'}
     # Vẽ bản đồ bằng px.scatter_mapbox
     fig = px.scatter_mapbox(
         df_location,
@@ -306,9 +289,13 @@ def update_map(n_clicks, data):
         color="Color",  # Sử dụng cột 'Color' để xác định màu sắc
         color_discrete_map=color_discrete_map  # Bản đồ màu sắc
     )
-
-
     # Cấu hình layout cho bản đồ
+    fig.update_traces(
+        marker=dict(
+            size=10
+        ),
+        textposition='top center'
+    )
     fig.update_layout(
         mapbox=dict(
             style='carto-positron',
@@ -317,6 +304,4 @@ def update_map(n_clicks, data):
         autosize=True,
         margin=dict(l=0, r=0, t=0, b=0),
     )
-
-
     return fig
