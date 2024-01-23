@@ -1,7 +1,7 @@
-Index,Category,Rating,Reviewer Name,GPS,Place_ID,Place Name
-173,"['Sushi Restaurant', 'Asian Restaurant', 'Japanese Restaurant']",4.0,Tom Kolbeck,"[37.77592, -122.426286]",115317324152703736863,Domo
-52172,"['Japanese Restaurant', 'Asian Restaurant', 'Sushi Restaurant']",5.0,william spindler,"[40.178074, -122.235234]",114222401649232122154,Echizen Japanese Restaurant
-74191,"['Sushi Restaurant', 'Asian Restaurant', 'Japanese Restaurant']",5.0,william spindler,"[40.175064, -122.242574]",103447826855477375077,Sushi Dan
-24487,"['Sushi Restaurant', 'Asian Restaurant', 'Japanese Restaurant']",5.0,Anne Mason,"[38.030536, -121.884024]",117184465217932141518,Atami Sushi Bar & Grill
-3578,"['Sushi Restaurant', 'Asian Restaurant', 'Japanese Restaurant']",5.0,Anne Mason,"[37.961078, -121.748886]",109963210073197344912,Sushi Infinity
-47095,"['Asian Restaurant', 'Japanese Restaurant', 'Sushi Restaurant']",5.0,William Corcuera,"[33.680515, -117.90633]",117561492501275243774,Genki Sushi Restaurant
+Index,Category,Rating,GPS,Place_ID,Place Name
+51528,"['Mexican Restaurant', 'Latin American Restaurant']",4.0,"[37.414686, -122.092218]",112296726119456298823,Taqueria La Bamba
+28642,"['Mexican Restaurant', 'Latin American Restaurant']",5.0,"[36.113313, -115.17516]",117330293964102903111,Johnny Mananas
+12545,"['Mexican Restaurant', 'Latin American Restaurant']",5.0,"[33.872734, -118.247769]",107636814545384036672,Milagros Cantina
+7317,"['Mexican Restaurant', 'Latin American Restaurant']",5.0,"[34.131655, -117.642476]",104488081809688275303,Red Cafe
+2263,"['Latin American Restaurant', 'Mexican Restaurant']",5.0,"[36.113003, -115.06284]",101363500210025300430,Taco Factory
+18258,"['Mexican Restaurant', 'Latin American Restaurant']",5.0,"[33.9, -117.564]",110989707995446054162,El Taco Loco

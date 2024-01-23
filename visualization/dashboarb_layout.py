@@ -21,8 +21,8 @@ def filter_by_selecttion(dateframe_input, select_year = 'All', select_place = 'A
 
 def create_introduct_layout():
     return html.Div([
-                html.H1("Advancing Data Science and Technology", className='title-introduct'),
-                html.P("to deliver financial access for all", className='subject-text'),
+                html.H1("Location Recommendation System based on Google Review Rating Prediction", className='title-introduct'),
+                html.P("IE212.O11.GROUP7", className='subject-text'),
                 html.A("See how it works", href="#see-here", className='button'),
             ], className='introduct-heading') 
 

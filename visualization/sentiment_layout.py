@@ -37,10 +37,10 @@ def create_sentiment_layout(item_id):
                 dcc.Graph(id=f'graph-neg-amount-sentiment-{item_id}'),
             ], className='sentiment-layout')
 
-def draw_fig_percent_sentiment(positive_feedback, negative_feedback, neutral_feedback, rating_mean):
+def draw_fig_percent_sentiment(positive_feedback, negative_feedback, rating_mean):
     # Tạo biểu đồ tròn
-    fig = go.Figure(data=[go.Pie(labels=['Positive', 'Negative', 'Neutral'],
-                                values=[positive_feedback, negative_feedback, neutral_feedback],
+    fig = go.Figure(data=[go.Pie(labels=['Positive', 'Negative'],
+                                values=[positive_feedback, negative_feedback],
                                 hole=0.4,
                                 marker=dict(colors=['#2ca155', '#e63946', '#a8a8a8'],
                                             line=dict(color='white', width=2)),

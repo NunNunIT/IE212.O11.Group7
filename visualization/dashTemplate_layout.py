@@ -12,6 +12,7 @@ def create_Year_layout():
     return html.Div([
             html.Label('Year'),
             dcc.Dropdown(
+                options = [],
                 value='All',
                 id='dropdown-year',
                 placeholder='Chọn năm',
@@ -160,7 +161,7 @@ def update_graph(df):
 
     return histogram_figure, map_figure
 # Import file
-input_file_path = './place_name_dict.pkl'
+input_file_path = '../data_result/data_places.pkl'
 with open(input_file_path, 'rb') as file:
     place_name_dict = pickle.load(file)
 #Create dictionary
