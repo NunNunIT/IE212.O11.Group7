@@ -5,6 +5,9 @@ import requests
 import pandas as pd
 from dashboarb_layout import *
 from data_utils import *
+from dashTemplate_layout import *
+from functools import partial
+
 
 # Đường dẫn của API
 api_url = 'http://127.0.0.1:5000/api/ie212_o11_group7/endpoint'
@@ -60,7 +63,7 @@ def update_dataframe():
 
 # Khởi tạo Dash App
 app = Dash(__name__)
-
+dropdown_options = [{'label': 'All', 'value': 'All'}]
 # Layout của Dash App
 app.layout = html.Div([
     create_introduct_layout(),
@@ -77,7 +80,18 @@ app.layout = html.Div([
         dcc.Graph(id='dashboard-map'),
         Interval(id='interval-component', interval=1*1000, n_intervals=0),  # Set interval to 5 seconds
     ], className="dashboard-container"),
+    html.H1("Dashboard"),
+    create_Year_layout(),
+    create_Category_layout(),
+    dcc.Graph(id='graph-content'),
+    html.H1("Map with all data"),
+    dcc.Graph(id='map-content'),
     html.H1("Recomended System", className="centered-heading"),
+    create_Placename_layout(),
+    create_IDPlace_layout(),
+    create_SearchButton_layout(),
+    create_dashtable_result(),
+    dcc.Store(id='result-store', data=df_result.to_dict('records')),
     html.H1("Sentiment", className="centered-heading"),
 ], className='main-container')
 
@@ -179,8 +193,120 @@ def update_chart_star_dashboarb(n_intervals, select_year = 'All', select_place =
     fig = draw_chart_reviews_by_star_dashboard(df)
     return fig
 
+@app.callback(
+    [Output('dropdown-year', 'options')],
+    [Input('interval-component', 'n_intervals')],
+)
+def update_dropdown_year2(n_intervals):
+    updated_df = update_dataframe()
+    dropdown_year_options = [{'label': 'All', 'value': 'All'}] + [{'label': str(year) + str(' (') + str(updated_df[updated_df['year'] == year].shape[0]) + str(')'), 'value': year} for year in updated_df['year'].unique()]
+    return [dropdown_year_options]
+
+@app.callback(
+    [Output('dropdown-categories', 'options')],
+    [Input('dropdown-year', 'value')],
+)
+def update_dropdown_categories(selected_year):
+    updated_df = update_dataframe()
+    filtered_df = updated_df[updated_df['year'] == selected_year] if selected_year != 'All' else updated_df
+
+    # Split and get unique categories, excluding empty values
+    categories = filtered_df['categories'].apply(
+        lambda x: x.replace("[", "").replace("]", "").replace("'", "").split(", "))
+    unique_categories = list(set(category for sublist in categories for category in sublist if category))
+
+    dropdown_options = [{'label': 'All', 'value': 'All'}] + [{'label': category, 'value': category} for category in
+                                                             unique_categories]
+    return [dropdown_options]
+
+@app.callback(
+    [Output('graph-content', 'figure'),
+        Output('map-content', 'figure')],
+    [Input('interval-component', 'n_intervals'),
+        Input('dropdown-year', 'value'),
+        Input('dropdown-categories', 'value'),]
+    )
 
 
+def update_chart_dashboarb(n_intervals, value_year = 'All', value_categories = 'All'):
+    df = update_dataframe()
+    if value_year != 'All' or value_categories != 'All':
+        df = filter_by_selecttion1(df, value_year, value_categories)
+    histogram_figure, map_figure = update_graph(df)
+    return histogram_figure, map_figure
+
+# @app.callback(
+#     [Output('dropdown-idplace', 'options')],
+#     [Input('interval-component', 'n_intervals')],
+#     allow_duplicate=True
+# )
+# def update_dropdown_placeID(n_intervals):
+#     updated_df = update_dataframe()
+#     dropdown_placeID_options = [{'label': 'All', 'value': 'All'}] + [{'label': placeid, 'value': placeid} for placeid in updated_df['gPlusPlaceId'].unique()]
+#     return [dropdown_placeID_options]
+
+
+@app.callback(
+    Output('dropdown-placename', 'options'),
+    [Input('interval-component', 'n_intervals')],
+)
+def update_placename(n_intervals):
+    updated_df = update_dataframe()
+    options = updated_df['gPlusPlaceId'].unique().tolist()
+    options = [{'label': 'All', 'value': 'All'}] + [{'label': find_name2(place_id), 'value': find_name2(place_id)} for place_id in options]
+    return options
+
+@app.callback(
+    [Output('dropdown-idplace', 'value'),
+     Output('dropdown-idplace', 'options')],
+    [Input('dropdown-placename', 'value')]
+)
+def update_idplace(value_name):
+    updated_df = update_dataframe()
+    print(value_name)
+    if value_name == 'All':
+        idplace = ['All']
+        dropdown_placeID_options = [{'label': 'All', 'value': 'All'}] + [{'label': placeid, 'value': placeid} for
+                                                                         placeid in updated_df['gPlusPlaceId'].unique()]
+    else:
+        filter_idplace = find_placeid(value_name)
+        print(filter_idplace)
+        if filter_idplace:
+            idplace = [filter_idplace]  # Wrap the single value in a list
+            dropdown_placeID_options = [{'label': filter_idplace, 'value': filter_idplace}]
+        else:
+            idplace = ['All']
+            dropdown_placeID_options = [{'label': 'All', 'value': 'All'}]
+    return idplace, dropdown_placeID_options
+
+
+@app.callback(
+    Output('result-store', 'data'),
+    [Input('button-get-value', 'n_clicks'),
+     Input('dropdown-idplace', 'value')],
+)
+def update_data(n_clicks, input_value):
+    if n_clicks > 0:
+        print("Xin vui lòng đợi...")
+        data_updated = recommendation(input_value)
+        print("Success")
+        return data_updated
+    else:
+        return df_result.to_dict('records')
+@app.callback(
+    Output('table_result', 'data'),
+    [Input('result-store', 'data')]
+)
+def update_table(data):
+    return data
+@app.callback(
+    Output('map-result', 'figure'),
+    [Input('button-get-value', 'n_clicks')],
+    [Input('table_result', 'data')]
+)
+def update_map_recommendation(n_clicks, data):
+    fig = update_map(n_clicks,data)
+    return fig
 
 # Khởi chạy Dash App
 if __name__ == '__main__':
