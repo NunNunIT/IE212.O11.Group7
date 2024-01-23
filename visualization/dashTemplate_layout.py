@@ -48,7 +48,7 @@ def create_IDPlace_layout():
 
 df_result = pd.read_csv('result.csv',encoding='latin-1')
 def create_dashtable_result():
-    df_result_filtered = df_result.drop(columns=["Index", "Reviewer Name", "Place_ID"])
+    df_result_filtered = df_result.drop(columns=["Index", "Place_ID"])
     df_result_filtered = df_result_filtered.drop(df_result_filtered.index[0])
     return html.Div([
             html.Div([
@@ -178,15 +178,15 @@ def find_placeid(place_name):
             break
     return place_id
 
-def find_similar_categories(input_category, categories, ratings, reviewer_names, gps):
+def find_similar_categories(input_category, categories, ratings, gps):
     # Combine the input category, categories, ratings, and reviewer names into a list
-    all_categories = [(input_category, 1.0, "", "")] + list(zip(categories, ratings, reviewer_names, gps))
+    all_categories = [(input_category, 1.0, "")] + list(zip(categories, ratings, gps))
 
     # Create a TfidfVectorizer
     vectorizer = TfidfVectorizer()
 
     # Transform the categories into TF-IDF vectors
-    tfidf_matrix = vectorizer.fit_transform([category for category, _, _, _ in all_categories])
+    tfidf_matrix = vectorizer.fit_transform([category for category, _, _ in all_categories])
 
     # Calculate the cosine similarity between the input category and all other categories
     similarity_scores = cosine_similarity(tfidf_matrix[0], tfidf_matrix[1:])
@@ -195,26 +195,29 @@ def find_similar_categories(input_category, categories, ratings, reviewer_names,
     most_similar_indices = similarity_scores.argsort()[0][::-1]
 
     # Sort the ratings and GPS based on the category indices
-    sorted_ratings = sorted(zip(most_similar_indices, ratings, reviewer_names, gps), key=lambda x: x[1], reverse=True)
+    sorted_ratings = sorted(zip(most_similar_indices, ratings, gps), key=lambda x: x[1], reverse=True)
 
     unique_gps = set()
     unique_sorted_ratings = []
 
     # Filter out duplicate GPS values
-    for index, rating, reviewer_name, gps_value in sorted_ratings:
+    for index, rating, gps_value in sorted_ratings:
         if gps_value not in unique_gps:
             unique_gps.add(gps_value)
-            unique_sorted_ratings.append((index, rating, reviewer_name, gps_value))
+            unique_sorted_ratings.append((index, rating, gps_value))
 
     return most_similar_indices[:5], unique_sorted_ratings
 
+
 df = pd.read_csv('df_ca.csv')
+average_ratings = df.groupby('gPlusPlaceId')['rating'].mean().reset_index()
+merged_data = pd.merge(average_ratings, df[['gPlusPlaceId', 'gps', 'categories']], on='gPlusPlaceId', how='left')
+df1 = merged_data.drop_duplicates(subset='gPlusPlaceId', keep='first')
 def recommendation(placeid):
-    data = df
+    data = df1
     # Get the categories, ratings, reviewer names, and GPS columns
     categories = data['categories'].tolist()
     ratings = data['rating'].tolist()
-    reviewer_names = data['reviewerName'].tolist()
     gps = data['gps'].tolist()
     gPlusPlaceId = data['gPlusPlaceId'].tolist()
     input_gplus_place_id = placeid
@@ -224,28 +227,25 @@ def recommendation(placeid):
     index_input = filtered_data.index.tolist()[0]
     input_category = filtered_data['categories'].iloc[0]
     rating_input = filtered_data['rating'].iloc[0]
-    reviewername_input = filtered_data['reviewerName'].iloc[0]
     Gps_input = filtered_data['gps'].iloc[0]
     Place_name_input = find_name2(input_gplus_place_id)
 
     if input_category:
         # Find similar categories and their indices, along with sorted ratings
-        similar_category_indices, sorted_ratings = find_similar_categories(input_category, categories, ratings,
-                                                                           reviewer_names, gps)
+        similar_category_indices, sorted_ratings = find_similar_categories(input_category, categories, ratings, gps)
         # Print and write the similar categories, indices, ratings, reviewer names, and GPS values in the desired format
-        print("Indices, Similar Categories, Ratings, Reviewer Names, GPS, Place_ID and Name:")
+        print("Indices, Similar Categories, Ratings, GPS, Place_ID and Name:")
         with open('result.csv', 'w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(['Index', 'Category', 'Rating', 'Reviewer Name', 'GPS', 'Place_ID', 'Place Name'])
+            writer.writerow(['Index', 'Category', 'Rating', 'GPS', 'Place_ID', 'Place Name'])
             writer.writerow(
-                [index_input, input_category, rating_input, reviewername_input, Gps_input, input_gplus_place_id,
-                 Place_name_input])
-            for index, rating, reviewer_name, gps_value in sorted_ratings[:5]:
+                [index_input, input_category, rating_input, Gps_input, input_gplus_place_id, Place_name_input])
+            for index, rating, gps_value in sorted_ratings[:5]:
                 category = categories[index]
                 gplus_place_id = gPlusPlaceId[index]
                 place_name = find_name2(gplus_place_id)
-                writer.writerow([index, category, rating, reviewer_name, gps_value, gplus_place_id, place_name])
-                print(f"{index:5}  {category:60} {rating:<5} {reviewer_name} {gps_value} {gplus_place_id} {place_name}")
+                writer.writerow([index, category, rating, gps_value, gplus_place_id, place_name])
+                print(f"{index:5}  {category:60} {rating:<5}  {gps_value} {gplus_place_id} {place_name}")
 
             file.close()
     else:
@@ -254,6 +254,7 @@ def recommendation(placeid):
     df_result_updated = pd.read_csv('result.csv')
     data_updated = df_result_updated.to_dict('records')
     return data_updated
+
 
 def update_data(df_result,n_clicks, input_value):
     if n_clicks > 0:
