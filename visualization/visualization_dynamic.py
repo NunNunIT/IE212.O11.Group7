@@ -349,8 +349,8 @@ def update_sentiment_1(dropdown_place_options_1):
     df = update_dataframe()
 
     # Load data from the pickle file
-    with open('../data_result/counter.pkl', 'rb') as file:
-        data_counter = pickle.load(file)
+    with open('../data_result/counter.pkl', 'rb') as files:
+        data_counter = pickle.load(files)
 
     top_nouns_by_sentiment_range(df, data_counter)
 
