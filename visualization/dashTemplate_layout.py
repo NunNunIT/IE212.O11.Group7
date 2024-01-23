@@ -15,7 +15,6 @@ def create_Year_layout():
             dcc.Dropdown(
                 value='All',
                 id='dropdown-year',
-                style={'width': '250px', 'padding': '0 12px'},
                 placeholder='Chọn năm',
             ),
         ], style={'display': 'inline-block', 'margin-right': '20px'})
@@ -27,7 +26,6 @@ def create_Category_layout():
                 value='All',
                 id='dropdown-categories',
                 placeholder='Category',
-                style={'width': '350px', 'padding': '0 15px'}
             ),
         ], style={'display': 'inline-block'})
 
@@ -37,26 +35,24 @@ def create_Placename_layout():
             dcc.Dropdown(
                 value='All',
                 id='dropdown-placename',
-                style={'width': '350px', 'padding': '0 12px'}
             ),
-        ], style={'display': 'inline-block', 'margin-right': '20px'})
+        ], className = 'dropdown-item')
 
 def create_IDPlace_layout():
     return html.Div([
-            html.Label('ID Place', style={'margin-right': '10px'}),
+            html.Label('ID Place'),
             dcc.Dropdown(
                 value='All',
                 id='dropdown-idplace',
-                style={'width': '350px', 'padding': '0 0px', 'margin-right': '20px'}
             ),
-        ], style={'display': 'inline-block', 'margin-right': '20px'})
+        ], className = 'dropdown-item')
 
 df_result = pd.read_csv('result.csv',encoding='latin-1')
 def create_dashtable_result():
     return html.Div([
             html.Div([
                 dcc.Graph(id='map-result', config={'displayModeBar': False})
-            ], className='six columns', style={'margin-bottom': '20px'}),
+            ]),
             # Điều chỉnh kích thước bản đồ
 
             html.Div([
@@ -64,10 +60,8 @@ def create_dashtable_result():
                     id='table_result',
                     columns=[{'name': col, 'id': col} for col in df_result.columns],
                     data=df_result.to_dict('records'),
-                    page_size=10,
-                    style_table={'height': '200px'},
-                    style_cell={'maxWidth': 100, 'overflow': 'ellipsis', 'textOverflow': 'ellipsis',
-                                'whiteSpace': 'nowrap'},
+                    style_table={'height': '400px'},
+                    style_cell={'maxWidth': 100, 'overflow': 'ellipsis', 'textOverflow': 'ellipsis', 'whiteSpace': 'nowrap'},
                     style_header={
                         'backgroundColor': '#043296',
                         'fontWeight': 'bold',
@@ -75,13 +69,15 @@ def create_dashtable_result():
                         'textAlign': 'center'
                     },
                 )
-            ], className='six columns')])
+            ])
+        ], className='contain-layout')
+
 def create_SearchButton_layout():
     return html.Div([
             html.Button("Search", id='button-get-value', n_clicks=0,
-                        style={'font-size': '18px', 'border': '2px solid blue', 'padding': '5px 10px',
-                               'background-color': 'blue', 'color': 'white', 'display': 'inline-block',
-                               'border-radius': '5px'}),
+                        style={'font-size': '18px', 'border': '2px solid #015fc2', 'padding': '5px 10px',
+                               'background-color': '#015fc2', 'color': 'white', 'display': 'inline-block',
+                               'border-radius': '5px', 'padding': '10px'}),
         ], style={'margin-right': '20px', 'margin-top': '10px', 'text-align': 'center'})
 def update_idplace(df_placename, value_name):
     if value_name == 'All':
@@ -170,7 +166,7 @@ def update_graph(df):
 #         place_name_dict = pickle.load(file)
 #     place_name = place_name_dict.get(place_id)
 #     return place_name
-input_file_path = './place_name_dict/place_name_dict.pkl'
+input_file_path = './place_name_dict.pkl'
 with open(input_file_path, 'rb') as file:
     place_name_dict = pickle.load(file)
 

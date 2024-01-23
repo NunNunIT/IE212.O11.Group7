@@ -42,7 +42,7 @@ def create_detail_table_layout():
                         'textAlign': 'center'
                     },
                 )
-            ], className='contain-layout')
+            ])
 
 def create_dashboard_option_layout():
     return html.Div([
@@ -212,10 +212,5 @@ def draw_chart_reviews_by_star_dashboard(dataframe_input):
         showarrow=False,
         font=dict(size=24, color='#fbb040',)
     )
-
-    # fig.update_layout(
-    #     title_font=dict(weight='bold'),
-    # )
-    
     return fig
 

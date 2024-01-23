@@ -54,19 +54,6 @@ td {
     padding: 8px; /* Khoảng cách giữa nội dung và đường viền của ô */
 }
 
-#SV_info {
-    border-collapse: collapse;
-}
-
-#SV_info th,
-#SV_info td {
-    text-align: center;
-    padding: 8px;
-}
-
-#SV_info td:nth-child(2) {
-    text-align: left;
-}
 
 .blue-text {
     color: #043296;
@@ -102,8 +89,6 @@ td {
 }
 
 
-
-
 .title-introduct {
     color: white;
     font-size: 3em;
@@ -126,5 +111,6 @@ text-align: center;
     text-decoration: none;
     transition: color 0.3s ease-in-out;
 }
+
 
 

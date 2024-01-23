@@ -8,6 +8,7 @@ from data_utils import *
 from dashTemplate_layout import *
 from functools import partial
 
+from sentiment_layout import *
 
 # Đường dẫn của API
 api_url = 'http://127.0.0.1:5000/api/ie212_o11_group7/endpoint'
@@ -75,24 +76,39 @@ app.layout = html.Div([
         html.Div([
                 dcc.Graph(id='dashboard-review-chart'),
                 dcc.Graph(id='dashboarb-fig-star'),
-            ], style={'columnCount': 2}),
+            ], className='contain-layout'),
         create_detail_table_layout(),
-        dcc.Graph(id='dashboard-map'),
+        # dcc.Graph(id='dashboard-map'),
         Interval(id='interval-component', interval=1*1000, n_intervals=0),  # Set interval to 5 seconds
     ], className="dashboard-container"),
-    html.H1("Dashboard"),
-    create_Year_layout(),
-    create_Category_layout(),
-    dcc.Graph(id='graph-content'),
-    html.H1("Map with all data"),
-    dcc.Graph(id='map-content'),
+    html.H1("Categories", className="centered-heading"),
+    html.Div([
+        html.Div([ 
+            create_Year_layout(),
+            create_Category_layout(),
+        ], className='contain-layout'),
+        html.Div([
+            dcc.Graph(id='graph-content'),
+            dcc.Graph(id='map-content'),
+        ], className='contain-layout'),
+    ], className="dashboard-container"),
     html.H1("Recomended System", className="centered-heading"),
-    create_Placename_layout(),
-    create_IDPlace_layout(),
-    create_SearchButton_layout(),
-    create_dashtable_result(),
-    dcc.Store(id='result-store', data=df_result.to_dict('records')),
+    html.Div([
+        html.Div([ 
+            create_Placename_layout(),
+            create_IDPlace_layout(),
+        ], className='contain-layout'),
+        create_SearchButton_layout(),
+        html.Div([ 
+            create_dashtable_result(),
+            dcc.Store(id='result-store', data=df_result.to_dict('records')),
+        ], className='contain-layout'),
+    ], className="dashboard-container"),
     html.H1("Sentiment", className="centered-heading"),
+    html.Div([
+        create_sentiment_layout(1),
+        create_sentiment_layout(2),
+    ], className="dashboard-container"),
 ], className='main-container')
 
 # Callback để cập nhật dữ liệu từ API và cập nhật dropdown
@@ -227,8 +243,7 @@ def update_dropdown_categories(selected_year):
         Input('dropdown-categories', 'value'),]
     )
 
-
-def update_chart_dashboarb(n_intervals, value_year = 'All', value_categories = 'All'):
+def update_chart_categories_dashboarb(n_intervals, value_year = 'All', value_categories = 'All'):
     df = update_dataframe()
     if value_year != 'All' or value_categories != 'All':
         df = filter_by_selecttion1(df, value_year, value_categories)
@@ -285,20 +300,21 @@ def update_idplace(value_name):
     [Input('button-get-value', 'n_clicks'),
      Input('dropdown-idplace', 'value')],
 )
+
 def update_data(n_clicks, input_value):
     if n_clicks > 0:
-        print("Xin vui lòng đợi...")
         data_updated = recommendation(input_value)
-        print("Success")
         return data_updated
     else:
         return df_result.to_dict('records')
+    
 @app.callback(
     Output('table_result', 'data'),
     [Input('result-store', 'data')]
 )
 def update_table(data):
     return data
+
 @app.callback(
     Output('map-result', 'figure'),
     [Input('button-get-value', 'n_clicks')],
@@ -307,6 +323,33 @@ def update_table(data):
 def update_map_recommendation(n_clicks, data):
     fig = update_map(n_clicks,data)
     return fig
+
+@app.callback(
+    Output('dropdown-place-1', 'options'),
+    [Input('button-place-1', 'n_clicks')],
+    [State('dropdown-place-1', 'value')]
+)
+def update_dropdown_options(n_clicks, selected_value):
+    updated_df = update_dataframe()
+    dropdown_place_options = [{'label': 'All', 'value': 'All'}] + [{'label': str(place) + str(' (') + str(updated_df[updated_df['gPlusPlaceId'] == place].shape[0]) + str(')'), 'value': place} for place in updated_df['gPlusPlaceId'].unique()]
+    return [dropdown_place_options]  # Đặt danh sách trong dấu ngoặc vuông để trả về một danh sách
+
+@app.callback(
+    Output('dropdown-place-2', 'options'),
+    [Input('button-place-2', 'n_clicks')],
+    [State('dropdown-place-2', 'value')]
+)
+def update_dropdown_options(n_clicks, selected_value):
+    updated_df = update_dataframe()
+    dropdown_place_options = [{'label': 'All', 'value': 'All'}] + [{'label': str(place) + str(' (') + str(updated_df[updated_df['gPlusPlaceId'] == place].shape[0]) + str(')'), 'value': place} for place in updated_df['gPlusPlaceId'].unique()]
+    return [dropdown_place_options]  # Đặt danh sách trong dấu ngoặc vuông để trả về một danh sách
+
+@app.callback(
+    [Output('dropdown-idplace', 'value'),
+     Output('dropdown-idplace', 'options')],
+    [Input('dropdown-place-1', 'value')]
+)
+
 
 # Khởi chạy Dash App
 if __name__ == '__main__':
