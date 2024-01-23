@@ -274,7 +274,7 @@ def update_placename(n_intervals):
      Output('dropdown-idplace', 'options')],
     [Input('dropdown-placename', 'value')]
 )
-def update_idplace(value_name):
+def update_idplace_dropdown(value_name):
     updated_df = update_dataframe()
     print(value_name)
     if value_name == 'All':
@@ -299,7 +299,7 @@ def update_idplace(value_name):
      Input('dropdown-idplace', 'value')],
 )
 
-def update_data(n_clicks, input_value):
+def update_data_recommend(n_clicks, input_value):
     if n_clicks > 0:
         data_updated = recommendation(input_value)
         return data_updated

@@ -17,3 +17,6 @@ data/users.clean.json.gz
 
 data/places_TX.json.gz
 data/reviews_TX.json.gz
+
+visualizaton/place_name_dict.plk
+\visualization\place_name_dict.pkl
