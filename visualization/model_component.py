@@ -9,6 +9,9 @@ import string
 from nltk.stem.porter import *
 from nltk.corpus import stopwords
 from textblob import TextBlob
+from nltk import word_tokenize, pos_tag
+from nltk.corpus import stopwords
+from collections import Counter
 
 from sklearn import linear_model
 from collections import defaultdict
@@ -75,3 +78,76 @@ def predictions_and_other(df_in):
     predictions = model.predict(X)
 
     df_in["Rating_predict"] = predictions
+
+def top_nouns_by_sentiment_range(df_in, counters):
+    noun_freq_by_id_sentiment_range = {}
+
+    text_column = 'sentences'
+    sentiment_column = 'sentiments'
+    id_column = 'gPlusPlaceId'
+    negative_range = (-1, 0)
+    positive_range = (0, 1)
+    n = 20
+
+    for index, row in df_in.iterrows():
+        sentiments = row[sentiment_column]
+        if not sentiments:
+            continue
+
+        text_data = row[text_column]
+        if not text_data:
+            continue
+
+        place_id = row[id_column]
+        place_name = row["name"]
+
+        if place_id not in noun_freq_by_id_sentiment_range:
+            noun_freq_by_id_sentiment_range[place_id] = {
+                'negative': Counter(),
+                'positive': Counter(),
+                'name': string
+            }
+
+        for i, sentiment in enumerate(sentiments):
+            if negative_range[0] <= sentiment < negative_range[1]:
+                sentiment_label = 'negative'
+            elif positive_range[0] <= sentiment <= positive_range[1]:
+                sentiment_label = 'positive'
+            else:
+                continue
+
+            tokens = word_tokenize(text_data[i])
+            tagged_words = pos_tag(tokens)
+
+            nouns = [word for word, pos in tagged_words if pos.startswith('N')]
+            stop_words = set(stopwords.words('english'))
+            nouns = [word.lower() for word in nouns if word.lower() not in stop_words]
+
+            noun_freq_by_id_sentiment_range[place_id][sentiment_label].update(nouns)
+
+    # Extract the top n items for each sentiment category
+    top_nouns_by_id_sentiment_range = {}
+    for place_id, sentiment_counts in noun_freq_by_id_sentiment_range.items():
+        top_nouns_by_id_sentiment_range[place_id] = {}
+        for sentiment_label, noun_counter in sentiment_counts.items():
+            top_nouns_by_id_sentiment_range[place_id][sentiment_label] = dict(noun_counter.most_common(n))
+    top_nouns_by_id_sentiment_range[place_id]['name'] = place_name
+
+    counters = merge_data(counters, top_nouns_by_id_sentiment_range)
+
+def merge_data(dict1, dict2):
+    merged_data = dict1
+
+    for place_id, data2 in dict2.items():
+        if place_id in merged_data:
+            # Update counters
+            merged_data[place_id]['negative'].update(data2.get('negative', Counter()))
+            merged_data[place_id]['positive'].update(data2.get('positive', Counter()))
+
+            # Update other values, for example, 'name'
+            merged_data[place_id]['name'] = data2.get('name', merged_data[place_id]['name'])
+        else:
+            # If the place_id doesn't exist in the first dictionary, add it
+            merged_data[place_id] = data2.copy()
+
+    return merged_data
