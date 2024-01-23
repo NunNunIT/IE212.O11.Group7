@@ -7,7 +7,7 @@ received_data = []
 lastest_data = None
 
 @app.route('/api/ie212_o11_group7/endpoint', methods=['GET', 'POST'])
-def handle_data():
+def collect_reviews_data():
     global lastest_data
     if request.method == 'GET':
         try:
@@ -28,9 +28,16 @@ def handle_data():
             data = request.get_json()
             lastest_data = data
             received_data.append(data)
+
+            # temp_file_path = 'received_data.json'
+            # with open(temp_file_path, 'w') as json_file:
+            #     json.dump(received_data, json_file)
+
             return jsonify({"message": "Data received successfully"})
         except Exception as e:
             return jsonify({"error": str(e)})
+        
+received_pos_neg_data = []
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
