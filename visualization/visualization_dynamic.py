@@ -106,18 +106,23 @@ app.layout = html.Div([
     ], className="dashboard-container"),
     html.H1("Sentiment", className="centered-heading"),
     html.Div([
-        create_sentiment_layout(1),
-        create_sentiment_layout(2),
-    ], className="dashboard-container"),
+        create_update_counter_button_layout(),
+        html.Div([
+            create_sentiment_layout(1),
+            create_sentiment_layout(2),
+        ], className='contain-layout'),
+    ], className='dashboard-container'),
 ], className='main-container')
 
+
+# DASHBOARD
 # Callback để cập nhật dữ liệu từ API và cập nhật dropdown
 @app.callback(
     [Output('year-dropdown', 'options'),
      Output('place-dropdown', 'options'),],
     [Input('interval-component', 'n_intervals')],
 )
-def update_dropdown_year(n_intervals):
+def update_dropdown(n_intervals):
     updated_df = update_dataframe()
     dropdown_year_options = [{'label': 'All', 'value': 'All'}] + [{'label': str(year) + str(' (') + str(updated_df[updated_df['year'] == year].shape[0]) + str(')'), 'value': year} for year in updated_df['year'].unique()]
     dropdown_place_options = [{'label': 'All', 'value': 'All'}] + [{'label': str(place) + str(' (') + str(updated_df[updated_df['gPlusPlaceId'] == place].shape[0]) + str(')'), 'value': place} for place in updated_df['gPlusPlaceId'].unique()]
@@ -209,6 +214,8 @@ def update_chart_star_dashboarb(n_intervals, select_year = 'All', select_place =
     fig = draw_chart_reviews_by_star_dashboard(df)
     return fig
 
+
+# CATEGORIES
 @app.callback(
     [Output('dropdown-year', 'options')],
     [Input('interval-component', 'n_intervals')],
@@ -313,32 +320,52 @@ def update_map_recommendation(n_clicks, data):
     fig = update_map(n_clicks,data)
     return fig
 
+#SENTIMENT
+# Update counter
 @app.callback(
-    Output('dropdown-place-1', 'options'),
-    [Input('button-place-1', 'n_clicks')],
-    [State('dropdown-place-1', 'value')]
+    [Output('dropdown-place-1', 'options'),
+    Output('dropdown-place-2', 'options'),],
+    [Input('button-counter-data', 'n_clicks')],
+    [State('dropdown-place-1', 'value'),
+     State('dropdown-place-2', 'value')]
 )
-def update_dropdown_options(n_clicks, selected_value):
+
+def update_dropdown_counter_data(n_clicks, dropdown1_value, dropdown2_value):
     updated_df = update_dataframe()
-    dropdown_place_options = [{'label': 'All', 'value': 'All'}] + [{'label': str(place) + str(' (') + str(updated_df[updated_df['gPlusPlaceId'] == place].shape[0]) + str(')'), 'value': place} for place in updated_df['gPlusPlaceId'].unique()]
-    return [dropdown_place_options]  # Đặt danh sách trong dấu ngoặc vuông để trả về một danh sách
+    dropdown_place_options = [{'label': 'Selected place', 'value': 'Selected place'}] + [{'label': str(place) + str(' (') + str(updated_df[updated_df['gPlusPlaceId'] == place].shape[0]) + str(')'), 'value': place} for place in updated_df['gPlusPlaceId'].unique()]
+    return [dropdown_place_options, dropdown_place_options]
+
 
 @app.callback(
-    Output('dropdown-place-2', 'options'),
-    [Input('button-place-2', 'n_clicks')],
-    [State('dropdown-place-2', 'value')]
+    [Output('graph-percent-sentiment-1', 'fig'),
+    Output('graph-pos-amount-sentiment-1', 'fig'),
+    Output('graph-neg-amount-sentiment-1', 'fig'),],
+    [Input('dropdown-place-1', 'value')],
 )
-def update_dropdown_options(n_clicks, selected_value):
-    updated_df = update_dataframe()
-    dropdown_place_options = [{'label': 'All', 'value': 'All'}] + [{'label': str(place) + str(' (') + str(updated_df[updated_df['gPlusPlaceId'] == place].shape[0]) + str(')'), 'value': place} for place in updated_df['gPlusPlaceId'].unique()]
-    return [dropdown_place_options]  # Đặt danh sách trong dấu ngoặc vuông để trả về một danh sách
 
-# @app.callback(
-#     [Output('dropdown-idplace', 'value'),
-#      Output('dropdown-idplace', 'options')],
-#     [Input('dropdown-place-1', 'value')]
-# )
+def update_sentiment_1(dropdown_place_options_1):
+    df = update_dataframe()
+    filtered_df = df[df['gPlusPlaceId'] == dropdown_place_options_1]
+    total_count = filtered_df.count()
+    avg_star = filtered_df['rating'].mean()
+    
+    # update_counter()
+    # Load data from the pickle file
+    with open('counter.pkl', 'rb') as file:
+        data = pickle.load(file)
 
+    # Access the data for the specified key
+    pos_df = pd.DataFrame([data[dropdown_place_options_1]['positive']]).transpose()
+    neg_df = pd.DataFrame([data[dropdown_place_options_1]['negative']]).transpose()
+    # Đếm số lượng pos, neg, neu, rating_avg
+    pos_count = pos_df.count()
+    neg_count = neg_df.count()
+    neu_count = total_count - (pos_count + neg_count)
+
+    fig1 = draw_fig_percent_sentiment(pos_count, neg_count, neu_count, avg_star)
+    fig2 = draw_fig_pos_sentiment(pos_df)
+    fig3 = draw_fig_neg_sentiment(neg_df)
+    return fig1, fig2, fig3
 
 # Khởi chạy Dash App
 if __name__ == '__main__':
