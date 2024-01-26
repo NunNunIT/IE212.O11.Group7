@@ -180,40 +180,20 @@ def find_placeid(place_name):
             break
     return place_id
 
-# Hàm khuyến nghị
+# Đọc dữ liệu từ tệp CSV và xây dựng mô hình ở đây
 df1 = pd.read_csv('Predict.csv')
-def recommendation(placeid):
-    data = df1
-    # Chuyển định dạng của cột 'gps' sang list
-    data['gps'] = data['gps'].apply(eval)
 
-    # Tiền xử lý dữ liệu
-    tfidf_vectorizer = TfidfVectorizer(stop_words='english')
-    tfidf_matrix = tfidf_vectorizer.fit_transform(data['categories'].fillna(''))
+# Chuyển định dạng của cột 'gps' sang list
+df1['gps'] = df1['gps'].apply(eval)
 
-    # Xây dựng mô hình
-    model = NearestNeighbors(n_neighbors=6, algorithm='ball_tree')
-    model.fit(tfidf_matrix)
+# Tiền xử lý dữ liệu
+tfidf_vectorizer = TfidfVectorizer(stop_words='english')
+tfidf_matrix = tfidf_vectorizer.fit_transform(df1['categories'].fillna(''))
 
-    user_info, result = recommend(placeid)
-    # Ghi thông tin của user_input và kết quả vào cùng một tệp CSV
-    with open('result.csv', 'w', newline='') as file:
-        writer = csv.writer(file)
-        
-        # Ghi header
-        writer.writerow(['name','categories','average_rating', 'GPS','gPlusPlaceId'])
-        
-        # Ghi user_info vào tệp
-        writer.writerow(user_info.values.flatten())
-
-        # Ghi result vào tệp
-        result.to_csv(file, header=False, index=False)
-    df_result_updated = pd.read_csv('result.csv')
-    data_updated = df_result_updated.to_dict('records')
-    return data_updated
-
+# Xây dựng mô hình
+model = NearestNeighbors(n_neighbors=6, algorithm='brute')
+model.fit(tfidf_matrix)
 # Hàm khuyến nghị
-
 def recommend(gPlusPlaceId):
     # Lấy thông tin từ dataset dựa trên gPlusPlaceId
     user_info = df1[df1['gPlusPlaceId'] == gPlusPlaceId][['name','categories','average_rating', 'gps','gPlusPlaceId']]
@@ -236,11 +216,30 @@ def recommend(gPlusPlaceId):
     # Sắp xếp theo average_rating giảm dần
     recommended_places = recommended_places.sort_values(by='average_rating', ascending=False)
 
-    return user_info, recommended_places[['name','categories','average_rating', 'gps','gPlusPlaceId']]
+    return user_info, recommended_places[['name', 'categories', 'average_rating', 'gps', 'gPlusPlaceId']]
 
 # average_ratings = df.groupby('gPlusPlaceId')['average_rating'].mean().reset_index()
 # merged_data = pd.merge(average_ratings, df[['gPlusPlaceId', 'gps', 'categories', 'name']], on='gPlusPlaceId', how='left')
 # df1 = merged_data.drop_duplicates(subset='gPlusPlaceId', keep='first')
+
+def recommendation(placeid):
+    data = df1
+    user_info, result = recommend(placeid)
+    # Ghi thông tin của user_input và kết quả vào cùng một tệp CSV
+    with open('result.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+
+        # Ghi header
+        writer.writerow(['name', 'categories', 'average_rating', 'GPS', 'gPlusPlaceId'])
+
+        # Ghi user_info vào tệp
+        writer.writerow(user_info.values.flatten())
+
+        # Ghi result vào tệp
+        result.to_csv(file, header=False, index=False)
+    df_result_updated = pd.read_csv('result.csv')
+    data_updated = df_result_updated.to_dict('records')
+    return data_updated
 
 def update_data(df_result,n_clicks, input_value):
     if n_clicks > 0:
