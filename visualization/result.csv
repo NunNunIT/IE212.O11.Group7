@@ -1,7 +1,6 @@
-Index,Category,Rating,Place Name,GPS,Place_ID
-21942,['Mexican Restaurant'],3.74562891928396,100% Taquito,"[-95.431007, 29.728722]",104294868854665738925
-34560,['Dentist'],8.163615151904692,Catfish Corner,"[32.73518, -96.522403]",106752465131753652077
-15339,"['Liquor Store', 'Wine Store', 'Beer Store']",8.050566424370594,Life Imprints by Kim,"[29.989731, -98.561353]",102997847559649802395
-36946,"['Restaurant', 'Chicken Restaurant', 'Fast Food Restaurant']",7.368161440355375,Chatham Village Apartments,"[-95.132396, 29.552301]",107214310202903653736
-3037,['Caterer'],7.250808065651582,Premiere Cinemas Renaissance,"[-95.411223, 29.946223]",100607198952533186533
-65527,"['Physician', 'Professional Services']",7.1481380968268695,Aio Wireless,"[30.236787, -97.724515]",112843343403763799192
+name,categories,average_rating,GPS,gPlusPlaceId
+1st Cavalry Division Headquarters,['Museum'],3.765980995253072,"[-97.783102, 31.141107]",118312877353717783417
+Bureau of Engraving and Printing,['Museum'],4.60086281665275,"[32.899674, -97.345657]",114591978207311464191
+Bullock Texas State History Museum,['Museum'],4.215694858334986,"[30.279965, -97.738578]",109254680959306854897
+African American Museum,['Museum'],4.150393735791013,"[32.779055, -96.764444]",111801096450603900964
+B H Rutherford Yates Museum,['Museum'],4.142375467587674,"[-95.380839, 29.75586]",112363986269409983512

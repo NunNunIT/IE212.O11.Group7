@@ -7,6 +7,9 @@ import pickle
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import csv
+from sklearn.neighbors import NearestNeighbors
+from sklearn.metrics.pairwise import haversine_distances
+from math import radians
 
 def create_Year_layout():
     return html.Div([
@@ -48,7 +51,7 @@ def create_IDPlace_layout():
 
 df_result = pd.read_csv('result.csv',encoding='latin-1')
 def create_dashtable_result():
-    df_result_filtered = df_result.drop(columns=["Index", "Place_ID"])
+    df_result_filtered = df_result.drop(columns=["gPlusPlaceId"])
     df_result_filtered = df_result_filtered.drop(df_result_filtered.index[0])
     return html.Div([
             html.Div([
@@ -134,13 +137,12 @@ def update_graph(df):
     df2['gps'] = dff['gps'].apply(lambda x: ast.literal_eval(x))
     df2['lat'] = df2['gps'].apply(lambda x: x[0])
     df2['lon'] = df2['gps'].apply(lambda x: x[1])
-    df2['placename'] = df2['gPlusPlaceId'].apply(find_name2)
     df2 = df2.drop(columns=['gps'])
 
     map_figure = px.scatter_mapbox(df2,
                                    lat='lat',
                                    lon='lon',
-                                   text='placename',
+                                   text='name',
                                    mapbox_style='carto-positron',
                                    color_discrete_sequence=['#002f72'])
     map_figure.update_traces(
@@ -178,86 +180,67 @@ def find_placeid(place_name):
             break
     return place_id
 
-def find_similar_categories(input_category, categories, ratings, reviewer_names, gps):
-    # Combine the input category, categories, ratings, and reviewer names into a list
-    all_categories = [(input_category, 1.0, "", "")] + list(zip(categories, ratings, reviewer_names, gps))
-
-    # Create a TfidfVectorizer
-    vectorizer = TfidfVectorizer()
-
-    # Transform the categories into TF-IDF vectors
-    tfidf_matrix = vectorizer.fit_transform([category for category, _, _, _ in all_categories])
-
-    # Calculate the cosine similarity between the input category and all other categories
-    similarity_scores = cosine_similarity(tfidf_matrix[0], tfidf_matrix[1:])
-
-    # Get the indices of the most similar categories
-    most_similar_indices = similarity_scores.argsort()[0][::-1]
-
-    # Sort the ratings and GPS based on the category indices
-    sorted_ratings = sorted(zip(most_similar_indices, ratings, reviewer_names, gps), key=lambda x: x[1], reverse=True)
-
-    unique_gps = set()
-    unique_sorted_ratings = []
-
-    # Filter out duplicate GPS values
-    for index, rating, reviewer_name, gps_value in sorted_ratings:
-        if gps_value not in unique_gps:
-            unique_gps.add(gps_value)
-            unique_sorted_ratings.append((index, rating, reviewer_name, gps_value))
-
-    return most_similar_indices[:5], unique_sorted_ratings
-
-
-# df = pd.read_csv('Predict.csv')
-df = pd.read_csv('Predict.csv')
-
-average_ratings = df.groupby('gPlusPlaceId')['average_rating'].mean().reset_index()
-merged_data = pd.merge(average_ratings, df[['gPlusPlaceId', 'gps', 'categories', 'name']], on='gPlusPlaceId', how='left')
-df1 = merged_data.drop_duplicates(subset='gPlusPlaceId', keep='first')
+# Hàm khuyến nghị
+df1 = pd.read_csv('Predict.csv')
 def recommendation(placeid):
     data = df1
-    # Get the categories, ratings, reviewer names, and GPS columns
-    categories = data['categories'].tolist()
-    ratings = data['average_rating'].tolist()
-    reviewer_names = data['name'].tolist()
-    gps = data['gps'].tolist()
-    gPlusPlaceId = data['gPlusPlaceId'].tolist()
-    input_gplus_place_id = placeid
+    # Chuyển định dạng của cột 'gps' sang list
+    data['gps'] = data['gps'].apply(eval)
 
-    # Tìm danh mục (category) tương ứng với input_gplus_place_id
-    filtered_data = data[data['gPlusPlaceId'] == input_gplus_place_id]
-    index_input = filtered_data.index.tolist()[0]
-    input_category = filtered_data['categories'].iloc[0]
-    rating_input = filtered_data['average_rating'].iloc[0]
-    reviewername_input = filtered_data['name'].iloc[0]
-    Gps_input = filtered_data['gps'].iloc[0]
+    # Tiền xử lý dữ liệu
+    tfidf_vectorizer = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = tfidf_vectorizer.fit_transform(data['categories'].fillna(''))
 
-    if input_category:
-        # Find similar categories and their indices, along with sorted ratings
-        similar_category_indices, sorted_ratings = find_similar_categories(input_category, categories, ratings,
-                                                                           reviewer_names, gps)
-        # Print and write the similar categories, indices, ratings, reviewer names, and GPS values in the desired format
-        print("Indices, Similar Categories, Ratings, Reviewer Names, GPS, Place_ID and Name:")
-        with open('result.csv', 'w', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(['Index', 'Category', 'Rating', 'Reviewer Name', 'GPS', 'Place_ID'])
-            writer.writerow(
-                [index_input, input_category, rating_input, reviewername_input, Gps_input, input_gplus_place_id])
-            for index, rating, reviewer_name, gps_value in sorted_ratings[:5]:
-                category = categories[index]
-                gplus_place_id = gPlusPlaceId[index]
-                writer.writerow([index, category, rating, reviewer_name, gps_value, gplus_place_id])
-                print(f"{index:5}  {category:60} {rating:<5} {reviewer_name} {gps_value} {gplus_place_id} ")
+    # Xây dựng mô hình
+    model = NearestNeighbors(n_neighbors=6, algorithm='ball_tree')
+    model.fit(tfidf_matrix)
 
-            file.close()
-    else:
-        print("Không tìm thấy gPlusPlaceId trong dữ liệu.")
+    user_info, result = recommend(placeid)
+    # Ghi thông tin của user_input và kết quả vào cùng một tệp CSV
+    with open('result.csv', 'w', newline='') as file:
+        writer = csv.writer(file)
+        
+        # Ghi header
+        writer.writerow(['name','categories','average_rating', 'GPS','gPlusPlaceId'])
+        
+        # Ghi user_info vào tệp
+        writer.writerow(user_info.values.flatten())
 
+        # Ghi result vào tệp
+        result.to_csv(file, header=False, index=False)
     df_result_updated = pd.read_csv('result.csv')
     data_updated = df_result_updated.to_dict('records')
     return data_updated
 
+# Hàm khuyến nghị
+
+def recommend(gPlusPlaceId):
+    # Lấy thông tin từ dataset dựa trên gPlusPlaceId
+    user_info = df1[df1['gPlusPlaceId'] == gPlusPlaceId][['name','categories','average_rating', 'gps','gPlusPlaceId']]
+
+    # Lấy gps từ dataset dựa trên gPlusPlaceId
+    input_gps = user_info['gps'].iloc[0]
+
+    idx = df1[df1['gPlusPlaceId'] == gPlusPlaceId].index[0]
+    distances, indices = model.kneighbors(tfidf_matrix[idx])
+    recommended_places = df1.loc[indices[0][1:]]
+
+    # Kiểm tra khoảng cách giữa gps nhập vào và gps của các địa điểm được khuyến nghị
+    input_gps_radians = [radians(coord) for coord in input_gps]
+    recommended_places['distance'] = recommended_places['gps'].apply(lambda x: haversine_distances([input_gps_radians, [radians(coord) for coord in x]])[0][0] * 6371000 / 1000.0)
+    recommended_places = recommended_places.sort_values(by='distance').drop(columns=['distance'])
+
+    # Loại bỏ gPlusPlaceId nhập vào khỏi danh sách khuyến nghị
+    recommended_places = recommended_places[recommended_places['gPlusPlaceId'] != gPlusPlaceId]
+
+    # Sắp xếp theo average_rating giảm dần
+    recommended_places = recommended_places.sort_values(by='average_rating', ascending=False)
+
+    return user_info, recommended_places[['name','categories','average_rating', 'gps','gPlusPlaceId']]
+
+# average_ratings = df.groupby('gPlusPlaceId')['average_rating'].mean().reset_index()
+# merged_data = pd.merge(average_ratings, df[['gPlusPlaceId', 'gps', 'categories', 'name']], on='gPlusPlaceId', how='left')
+# df1 = merged_data.drop_duplicates(subset='gPlusPlaceId', keep='first')
 
 def update_data(df_result,n_clicks, input_value):
     if n_clicks > 0:
@@ -270,7 +253,7 @@ def update_data(df_result,n_clicks, input_value):
 def update_map(n_clicks, data):
     df_result = pd.DataFrame(data).copy()
     gps_data = df_result['GPS']
-    place_name_data = df_result['Place Name']
+    place_name_data = df_result['name']
     df_location = pd.DataFrame({'GPS': gps_data, 'Place Name': place_name_data})
     # Chia cột GPS thành cột Latitude và Longitude
     df_location[['Latitude', 'Longitude']] = df_location['GPS'].str.extract('\[(.*?),\s(.*?)\]', expand=True)
