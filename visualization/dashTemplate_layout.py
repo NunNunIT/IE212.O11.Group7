@@ -134,13 +134,12 @@ def update_graph(df):
     df2['gps'] = dff['gps'].apply(lambda x: ast.literal_eval(x))
     df2['lat'] = df2['gps'].apply(lambda x: x[0])
     df2['lon'] = df2['gps'].apply(lambda x: x[1])
-    df2['placename'] = df2['gPlusPlaceId'].apply(find_name2)
     df2 = df2.drop(columns=['gps'])
 
     map_figure = px.scatter_mapbox(df2,
                                    lat='lat',
                                    lon='lon',
-                                   text='placename',
+                                   text='name',
                                    mapbox_style='carto-positron',
                                    color_discrete_sequence=['#002f72'])
     map_figure.update_traces(
@@ -241,7 +240,7 @@ def recommendation(placeid):
         print("Indices, Similar Categories, Ratings, Reviewer Names, GPS, Place_ID and Name:")
         with open('result.csv', 'w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow(['Index', 'Category', 'Rating', 'Reviewer Name', 'GPS', 'Place_ID'])
+            writer.writerow(['Index', 'Category', 'Rating', 'Place Name', 'GPS', 'Place_ID'])
             writer.writerow(
                 [index_input, input_category, rating_input, reviewername_input, Gps_input, input_gplus_place_id])
             for index, rating, reviewer_name, gps_value in sorted_ratings[:5]:

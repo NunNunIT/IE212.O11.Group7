@@ -18,7 +18,7 @@ def create_update_counter_button_layout():
 
 def create_sentiment_layout(item_id):
     return html.Div([
-                html.H1("Dash App với Dropdown và Biểu đồ"),
+                # html.H1("Dash App với Dropdown và Biểu đồ"),
 
                 # Dropdown cho việc chọn biểu đồ
                 dcc.Dropdown(

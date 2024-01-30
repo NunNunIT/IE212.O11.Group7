@@ -54,6 +54,8 @@ def update_dataframe():
 
             # Convert Unix timestamps to datetime objects
             df_new['review_date'] = pd.to_datetime(df_new['unixReviewTime'], unit='s')
+            # df_new["dtime"] = pd.to_datetime(df_new["unixReviewTime"], unit="s")
+            # predictions_and_other(df_new)
 
             # Extract the year from the datetime objects and create a 'year' column
             df_new['year'] = df_new['review_date'].dt.year
@@ -154,7 +156,7 @@ def update_data_table(n_intervals, select_year = 'All', select_place = 'All'):
         'unixReviewTime',
         'reviewTime',
         'gPlusUserId',
-        'last_update_time'
+        'last_update_time',
     ]
     # columns = [{'name': col, 'id': col} for col in dff.columns]
     # Create a list of dictionaries for columns based on the display_columns

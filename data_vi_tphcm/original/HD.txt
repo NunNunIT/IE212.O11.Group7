@@ -1,0 +1,8 @@
+Lấy place: https://console.apify.com/actors/nwua9Gu5YrADL7ZDj/console
+--- Cột: placeId, Title, Categories, categoryName, Location, Address, permanentlyClosed, URL, 
+--- Đặt tên file: Places_<Tên quận/huyện> Places_Q1
+
+Lấy reviews: https://console.apify.com/actors/Xb8osYTtOjlsgI6k9/console
+--- Cột: reviewId, placeId, Title, Location, Categories, categoryName,  
+  , reviewerId, Name, Stars, Text, publishedAtDate, 
+--- Đặt tên file: Reviews_<Tên quận/huyện> Reviews_Q1

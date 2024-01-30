@@ -105,7 +105,7 @@ def top_nouns_by_sentiment_range(df_in, counters):
             noun_freq_by_id_sentiment_range[place_id] = {
                 'negative': Counter(),
                 'positive': Counter(),
-                'name': string
+                # 'name': string
             }
 
         for i, sentiment in enumerate(sentiments):
@@ -131,7 +131,7 @@ def top_nouns_by_sentiment_range(df_in, counters):
         top_nouns_by_id_sentiment_range[place_id] = {}
         for sentiment_label, noun_counter in sentiment_counts.items():
             top_nouns_by_id_sentiment_range[place_id][sentiment_label] = dict(noun_counter.most_common(n))
-    top_nouns_by_id_sentiment_range[place_id]['name'] = place_name
+        top_nouns_by_id_sentiment_range[place_id]['name'] = place_name
 
     counters = merge_data(counters, top_nouns_by_id_sentiment_range)
 
