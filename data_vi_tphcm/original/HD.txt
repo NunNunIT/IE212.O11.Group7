@@ -6,3 +6,6 @@ Lấy reviews: https://console.apify.com/actors/Xb8osYTtOjlsgI6k9/console
 --- Cột: reviewId, placeId, title, location, categories, categoryName,  
   , reviewerId, name, stars, text, publishedAtDate, 
 --- Đặt tên file: Reviews_<Tên quận/huyện> Reviews_Q1
+
+Thủ Đức: 1347 -- 
+
