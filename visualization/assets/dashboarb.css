@@ -14,12 +14,6 @@
 }
 
 .contain-layout {
-    /*display: flex;*/
-    /*justify-content: space-between;  !* Các thành phần sẽ được căn giữa và cách nhau ra xa nhau *!*/
-    /*align-items: center;  !* Căn giữa theo chiều dọc *!*/
-    /*gap: 20px;*/
-    /*padding-top: 12px;*/
-    /*!* margin: 0 auto *!*/
     display: flex;
     align-items: flex-start;
     justify-content: flex-start; /* or justify-content: space-between; */
@@ -27,12 +21,6 @@
     padding-top: 12px;
 }
 .contain-layout2 {
-    /*display: flex;*/
-    /*justify-content: space-between;  !* Các thành phần sẽ được căn giữa và cách nhau ra xa nhau *!*/
-    /*align-items: center;  !* Căn giữa theo chiều dọc *!*/
-    /*gap: 20px;*/
-    /*padding-top: 12px;*/
-    /*!* margin: 0 auto *!*/
     display: flex;
     align-items: flex-start;
     justify-content: flex-start; /* or justify-content: space-between; */

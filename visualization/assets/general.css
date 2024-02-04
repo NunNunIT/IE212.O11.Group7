@@ -113,14 +113,6 @@ text-align: center;
     transition: color 0.3s ease-in-out;
 }
 .button2 {
-    /*background-color: white;*/
-    /*color: black;*/
-    /*padding: 5px 10px; !* Adjusted padding values for the button *!*/
-    /*border: 1px solid black;*/
-    /*border-radius: 5px;*/
-    /*cursor: pointer;*/
-    /*text-decoration: none;*/
-    /*transition: color 0.3s ease-in-out;*/
     display: block;
     margin-top: 10px;
 }
