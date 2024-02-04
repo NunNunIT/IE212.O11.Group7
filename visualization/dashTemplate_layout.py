@@ -77,7 +77,7 @@ def create_dashtable_result():
                         'textAlign': 'center'
                     },
                 )
-            ])
+            ]),
         ], className='contain-layout')
 
 def create_SearchButton_layout():
@@ -194,7 +194,7 @@ model.fit(tfidf_matrix)
 def recommend(gPlusPlaceId):
     # Lấy thông tin từ dataset dựa trên gPlusPlaceId
     user_info = data[data['gPlusPlaceId'] == gPlusPlaceId][['name', 'categories', 'average_rating', 'location/lat',
-                                                          'location/lng', 'gPlusPlaceId']]
+                                                          'location/lng', 'gPlusPlaceId','url']]
 
     # Lấy vị trí từ dataset dựa trên gPlusPlaceId
     input_lat = data[data['gPlusPlaceId'] == gPlusPlaceId]['location/lat'].iloc[0]
@@ -219,7 +219,7 @@ def recommend(gPlusPlaceId):
     # Sắp xếp theo average_rating giảm dần
     recommended_places = recommended_places.sort_values(by='average_rating', ascending=False)
 
-    return user_info, recommended_places[['name','categories','average_rating','location/lat','location/lng','gPlusPlaceId']]
+    return user_info, recommended_places[['name','categories','average_rating','location/lat','location/lng','gPlusPlaceId','url']]
 
 # average_ratings = df.groupby('gPlusPlaceId')['average_rating'].mean().reset_index()
 # merged_data = pd.merge(average_ratings, df[['gPlusPlaceId', 'gps', 'categories', 'name']], on='gPlusPlaceId', how='left')
@@ -233,7 +233,7 @@ def recommendation(placeid):
         writer = csv.writer(file)
 
         # Ghi header
-        writer.writerow(['name', 'categories', 'average_rating', 'location/lat', 'location/lng', 'gPlusPlaceId'])
+        writer.writerow(['name', 'categories', 'average_rating', 'location/lat', 'location/lng', 'gPlusPlaceId','url'])
 
         # Ghi user_info vào tệp
         writer.writerow(user_info.values.flatten())
