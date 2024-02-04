@@ -52,34 +52,38 @@ def create_IDPlace_layout():
             ),
         ], className='dropdown-item')
 
-df_result = pd.read_csv('result_HCM1.csv',encoding='utf-8')
+df_result = pd.read_csv('../data_result/result_HCM1.csv',encoding='utf-8')
 def create_dashtable_result():
-    df_result_filtered = df_result.drop(columns=["gPlusPlaceId"])
-    df_result_filtered = df_result_filtered.drop(df_result.index[0])
-    print(df_result_filtered)
-    return html.Div([
-            html.Div([
-                dcc.Graph(id='map-result', config={'displayModeBar': False})
-            ]),
-            # Điều chỉnh kích thước bản đồ
-            html.Div([
-                dash_table.DataTable(
-                    id='table_result',
-                    columns=[{'name': col, 'id': col} for col in df_result_filtered.columns],
-                    data=df_result_filtered.to_dict('records'),
-                    style_table={'height': '400px'},
-                    style_cell={'maxWidth': 100, 'overflow': 'ellipsis', 'textOverflow': 'ellipsis',
-                                'whiteSpace': 'nowrap'},
-                    style_header={
-                        'backgroundColor': '#043296',
-                        'fontWeight': 'bold',
-                        'color': 'white',
-                        'textAlign': 'center'
-                    },
-                )
-            ]),
-        ], className='contain-layout')
+    df_result_filtered = df_result.drop(columns=["gPlusPlaceId", "url"])
+    df_result_filtered = df_result_filtered.drop(df_result_filtered.index[0])
 
+    # Tạo một danh sách chứa thẻ <a> tương ứng với từng giá trị trong cột 'url'
+    links = [html.A(href=url, target='_blank', children="Xem", className='button2') for url in df_result['url']]
+
+    return html.Div([
+        html.Div([
+            dcc.Graph(id='map-result', config={'displayModeBar': False})
+        ]),
+        html.Div([
+            dash_table.DataTable(
+                id='table_result',
+                columns=[
+                    {'name': col, 'id': col} for col in df_result_filtered.columns
+                ],
+                data=df_result_filtered.to_dict('records'),
+                style_table={'height': '400px', 'width': '100%', 'minWidth': '100%'},
+                style_cell={'maxWidth': 100, 'overflow': 'ellipsis', 'textOverflow': 'ellipsis',
+                            'whiteSpace': 'nowrap'},
+                style_header={
+                    'backgroundColor': '#043296',
+                    'fontWeight': 'bold',
+                    'color': 'white',
+                    'textAlign': 'center'
+                },
+            ),
+            html.Div(links, id='link-container', className="link-container1"),
+        ], className='contain-layout2'),
+    ], className='contain-layout')
 def create_SearchButton_layout():
     return html.Div([
             html.Button("Search", id='button-get-value', n_clicks=0,
@@ -181,7 +185,7 @@ def find_placeid(place_name):
     return place_id
 
 # Đọc dữ liệu từ tệp CSV và xây dựng mô hình ở đây
-data = pd.read_csv('rated_places_new.csv', encoding='utf-8')
+data = pd.read_csv('../data_result/rated_places_new.csv', encoding='utf-8')
 
 # Tiền xử lý dữ liệu
 tfidf_vectorizer = TfidfVectorizer(stop_words='english')
@@ -229,7 +233,7 @@ def recommendation(placeid):
     df1 = data
     user_info, result = recommend(placeid)
     # Ghi thông tin của user_input và kết quả vào cùng một tệp CSV
-    with open('result_HCM1.csv', 'w', newline='', encoding='utf-8-sig') as file:
+    with open('../data_result/result_HCM1.csv', 'w', newline='', encoding='utf-8-sig') as file:
         writer = csv.writer(file)
 
         # Ghi header

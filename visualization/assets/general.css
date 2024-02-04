@@ -112,6 +112,18 @@ text-align: center;
     text-decoration: none;
     transition: color 0.3s ease-in-out;
 }
-
-
+.button2 {
+    display: block;
+    margin-top: 10px;
+}
+.link-container1 {
+    max-width: 200px;  /* Set a maximum width for the link container if needed */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-top: 20px;
+}
+#table_result{
+    flex:1;
+}
 
