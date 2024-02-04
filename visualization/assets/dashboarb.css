@@ -14,14 +14,31 @@
 }
 
 .contain-layout {
+    /*display: flex;*/
+    /*justify-content: space-between;  !* Các thành phần sẽ được căn giữa và cách nhau ra xa nhau *!*/
+    /*align-items: center;  !* Căn giữa theo chiều dọc *!*/
+    /*gap: 20px;*/
+    /*padding-top: 12px;*/
+    /*!* margin: 0 auto *!*/
     display: flex;
-    justify-content: space-between;  /* Các thành phần sẽ được căn giữa và cách nhau ra xa nhau */
-    align-items: center;  /* Căn giữa theo chiều dọc */
+    align-items: flex-start;
+    justify-content: flex-start; /* or justify-content: space-between; */
     gap: 20px;
     padding-top: 12px;
-    /* margin: 0 auto */
 }
-
+.contain-layout2 {
+    /*display: flex;*/
+    /*justify-content: space-between;  !* Các thành phần sẽ được căn giữa và cách nhau ra xa nhau *!*/
+    /*align-items: center;  !* Căn giữa theo chiều dọc *!*/
+    /*gap: 20px;*/
+    /*padding-top: 12px;*/
+    /*!* margin: 0 auto *!*/
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start; /* or justify-content: space-between; */
+    gap: 10px;
+    padding-top: 12px;
+}
 /* Định dạng dropdown để chiếm không gian rộng đầy đủ */
 .contain-layout>div {
     width: 100%;
