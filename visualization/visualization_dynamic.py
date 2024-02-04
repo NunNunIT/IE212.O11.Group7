@@ -9,9 +9,24 @@ from dashTemplate_layout import *
 from functools import partial
 from model_component import *
 from sentiment_layout import *
+from pymongo import MongoClient
 
 # Đường dẫn của API
 api_url = 'http://127.0.0.1:5000/api/ie212_o11_group7/endpoint'
+
+# Kết nối đến MongoDB
+client = MongoClient("mongodb://localhost:27017/ie212_o11_group7")
+db = client.ie212_o11_group7
+collection = db.reviews_tphcm_tan
+
+def update_dataframe2():
+    # Lấy dữ liệu từ MongoDB và chuyển đổi thành DataFrame
+    data_from_mongo = list(collection.find())
+    df = pd.DataFrame(data_from_mongo)
+
+    df['year'] = df['publishedAtDate'].dt.year
+
+    return df
 
 # Dữ liệu ban đầu
 initial_data = pd.DataFrame()
@@ -126,7 +141,7 @@ app.layout = html.Div([
     [Input('interval-component', 'n_intervals')],
 )
 def update_dropdown(n_intervals):
-    updated_df = update_dataframe()
+    updated_df = update_dataframe2()
     dropdown_year_options = [{'label': 'All', 'value': 'All'}] + [{'label': str(year) + str(' (') + str(updated_df[updated_df['year'] == year].shape[0]) + str(')'), 'value': year} for year in updated_df['year'].unique()]
     dropdown_place_options = [{'label': 'All', 'value': 'All'}] + [{'label': str(place) + str(' (') + str(updated_df[updated_df['gPlusPlaceId'] == place].shape[0]) + str(')'), 'value': place} for place in updated_df['gPlusPlaceId'].unique()]
     return [dropdown_year_options, dropdown_place_options]  # Đặt danh sách trong dấu ngoặc vuông để trả về một danh sách
@@ -142,7 +157,7 @@ def update_dropdown(n_intervals):
 )
 
 def update_data_table(n_intervals, select_year = 'All', select_place = 'All'):
-    dff = update_dataframe()
+    dff = update_dataframe2()
     if select_year != 'All' or select_place != 'All':
         dff = filter_by_selecttion(dff, select_year, select_place)
     # Specify the columns you want to display
@@ -176,7 +191,7 @@ def update_data_table(n_intervals, select_year = 'All', select_place = 'All'):
 
 def update_total_dashboarb(n_intervals, select_year = 'All', select_place = 'All'):
     # Prevent initial callback trigger and subsequent ones if no changes in dropdowns
-    df = update_dataframe()
+    df = update_dataframe2()
     if select_year != 'All' or select_place != 'All':
         df = filter_by_selecttion(df, select_year, select_place)
 
@@ -195,7 +210,7 @@ def update_total_dashboarb(n_intervals, select_year = 'All', select_place = 'All
     )
 
 def update_chart_dashboarb(n_intervals, select_year = 'All', select_place = 'All'):
-    df = update_dataframe()
+    df = update_dataframe2()
     if select_year != 'All' or select_place != 'All':
         df = filter_by_selecttion(df, select_year, select_place)
 
@@ -211,7 +226,7 @@ def update_chart_dashboarb(n_intervals, select_year = 'All', select_place = 'All
     )
 
 def update_chart_star_dashboarb(n_intervals, select_year = 'All', select_place = 'All'):
-    df = update_dataframe()
+    df = update_dataframe2()
     if select_year != 'All' or select_place != 'All':
         df = filter_by_selecttion(df, select_year, select_place)
 
