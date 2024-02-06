@@ -21,4 +21,6 @@ data/reviews_TX.json.gz
 visualizaton/place_name_dict.plk
 visualization/place_name_dict.pkl
 
-data_results
+# data_result
+data_vi_tphcm
+data

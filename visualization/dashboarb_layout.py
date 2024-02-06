@@ -5,17 +5,16 @@ import plotly.express as px
 import pandas as pd
 import plotly.graph_objects as go
 from dash.exceptions import PreventUpdate
-from data_utils import *
 
 def filter_by_selecttion(dateframe_input, select_year = 'All', select_place = 'All'):
     filtered_df = dateframe_input.copy()
     if select_year != 'All' and select_place != 'All':
         # Lọc DataFrame dựa trên cả hai điều kiện
-        filtered_df = filtered_df[(filtered_df['year'] == select_year) & (filtered_df['gPlusPlaceId'] == select_place)]
+        filtered_df = filtered_df[(filtered_df['year'] == select_year) & (filtered_df['placeId'] == select_place)]
     if select_year != 'All':
         filtered_df = filtered_df[filtered_df['year'] == select_year]
     elif select_place != 'All':
-        filtered_df = filtered_df[filtered_df['gPlusPlaceId'] == select_place]
+        filtered_df = filtered_df[filtered_df['placeId'] == select_place]
                             
     return filtered_df
 
@@ -97,7 +96,7 @@ def calculate_reviews_dashboarb(dataframe_input):
 
     # Creating columns for the total number of stars and reviews
     temp_df['total_stars'] = temp_df.loc[:, '0_star':'5_star'].sum(axis=1)
-    temp_df['total_reviews'] = temp_df['reviewText'].notna().astype(int)
+    temp_df['total_reviews'] = temp_df['text'].notna().astype(int)
 
 
     return temp_df

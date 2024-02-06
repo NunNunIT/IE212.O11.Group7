@@ -5,7 +5,6 @@ import plotly.express as px
 import pandas as pd
 import plotly.graph_objects as go
 from dash.exceptions import PreventUpdate
-from data_utils import *
 
 
 def create_update_counter_button_layout():
