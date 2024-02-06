@@ -1,0 +1,129 @@
+
+* {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    box-sizing: border-box;
+}
+
+/* Add smooth scroll behavior */
+html, body {
+    scroll-behavior: smooth;
+}
+
+html, body, div, span, h1, h2, h3, h4, h5, h6, p, a, blockquote, pre, code, em, img, small, strong, sub, sup, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+    font-family: 'Open Sans', 'Segoe UI', 'Tahoma', 'Verdana', 'Arial', 'Helvetica', 'sans-serif' !important;
+}
+
+html {
+    background: #f6f8ff;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #212529;
+}
+
+/* Áp dụng cho tất cả các bảng */
+table {
+    width: 100%; /* Đảm bảo bảng rộng bằng 100% của container */
+    border-collapse: collapse; /* Gộp các đường viền của ô */
+    margin: auto; /* Căn giữa bảng */
+}
+
+/* Kiểu cho header */
+th {
+    background-color: #043296; /* Màu header */
+    color: white; /* Màu chữ trong header */
+    font-weight: bold; /* Đậm chữ trong header */
+    padding: 10px; /* Khoảng cách giữa nội dung và đường viền */
+    text-align: center;
+}
+
+/* Kiểu cho dòng lẻ */
+tr:nth-child(even) {
+    background-color: #f1f1f1; /* Màu nền của dòng lẻ */
+}
+
+/* Kiểu cho dòng chẵn */
+tr:nth-child(odd) {
+    background-color: white; /* Màu nền của dòng chẵn */
+}
+
+/* Kiểu cho nội dung trong ô */
+td {
+    padding: 8px; /* Khoảng cách giữa nội dung và đường viền của ô */
+}
+
+
+.blue-text {
+    color: #043296;
+}
+
+.bold-text {
+    font-weight: bold;
+}
+
+.main-container .centered-heading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 8px;
+    font-size: 40px;
+    text-transform: uppercase;
+    /* height: 100vh;  */
+    /* Optional: Set the height to 100% of the viewport height */
+}
+
+.main-container .introduct-heading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: black;
+    background-image: url("./background-photo.gif"); /* The image used */
+    background-color: black; /* Used if the image is unavailable */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Do not repeat the image */
+    background-size: cover; /* Resize the background image to cover the entire container */
+}
+
+
+.title-introduct {
+    color: white;
+    font-size: 3em;
+    text-align: center;
+    padding: 0 12%;
+}
+
+.subject-text {
+color: white;
+font-size: 1.5em;
+text-align: center;
+}
+
+.button {
+    background-color: white;
+    color: black;
+    padding: 10px 20px;
+    border: 1px solid black;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: color 0.3s ease-in-out;
+}
+.button2 {
+    display: block;
+    margin-top: 10px;
+}
+.link-container1 {
+    max-width: 200px;  /* Set a maximum width for the link container if needed */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding-top: 20px;
+}
+#table_result{
+    flex:1;
+}
+
