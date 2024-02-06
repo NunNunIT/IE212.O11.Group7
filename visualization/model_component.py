@@ -1,153 +1,143 @@
-import gzip
-import pandas as pd
-import goslate
-import json
-import requests
-
-import nltk
-import string
-from nltk.stem.porter import *
-from nltk.corpus import stopwords
-from textblob import TextBlob
-from nltk import word_tokenize, pos_tag
-from nltk.corpus import stopwords
-from collections import Counter
-
-from sklearn import linear_model
-from collections import defaultdict
 from datetime import datetime
-import matplotlib.pyplot as plt
-
+import pandas as pd
+from string import punctuation
+import underthesea
 import joblib
+
+def modelsetup():
+    abbreviation_dict = '../vncorenlp/abbreviation_dictionary_vn.xlsx'
+    df = pd.read_csv('../vncorenlp/abbreviation_dictionary_vn.csv')
+    abbreviation_dict = df.set_index("abbreviation")["meaning"].to_dict()
+    # Define the base Vietnamese alphabet without tone marks
+    vietnamese_alphabet = "aăâbcdđeêghiklmnoôơpqrstuưvwxy"
+    vietnamese_letter_with_tone = "áàạãảắằẵẳặấầẩẫậéèẻẽẹềếểễệòóỏõọồốổỗộờớởỡợúùũủụứừửữựíìĩỉịýỳỹỷỵ"
+
+    # Create uppercase Vietnamese letters with tone marks
+    uppercase_vietnamese_letters_with_tone = [char.upper() for char in vietnamese_letter_with_tone]
+    uppercase_vietnamese_alphabet = vietnamese_alphabet.upper()
+
+    # Combine the lists into strings
+    lowercase_string = vietnamese_alphabet + "".join(vietnamese_letter_with_tone)
+    uppercase_string = uppercase_vietnamese_alphabet + "".join(uppercase_vietnamese_letters_with_tone)
+    allcase_string = lowercase_string + uppercase_string
+
+    punctuation = "!\"#$%&'()*+,./:;<=>?@[\]^_`{|}~"
+
+    from vncorenlp import VnCoreNLP
+    annotator = VnCoreNLP("../vncorenlp/VnCoreNLP-1.1.1.jar", annotators="wseg", max_heap_size='-Xmx500m')
+    
+def formatToDatetime(date_string):
+    date_string_without_fraction = date_string[:-5] + 'Z'
+    date_format = "%Y-%m-%dT%H:%M:%SZ"
+    return datetime.strptime(date_string_without_fraction, date_format)
+
+def unicodeReplace(text):
+    replacements = {
+        "òa": "oà", "óa": "oá", "ỏa": "oả", "õa": "oã", "ọa": "oạ",
+        "òe": "oè", "óe": "oé", "ỏe": "oẻ", "õe": "oẽ", "ọe": "oẹ",
+        "ùy": "uỳ", "úy": "uý", "ủy": "uỷ", "ũy": "uỹ", "ụy": "uỵ",
+        "Ủy": "Uỷ", "\n": "." , "\t": "."  
+    }
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+    return text
+
+def unicode(data):
+    data['text'] = data['text'].apply(unicodeReplace)
+    return data
 
 import re
 
-alphabets= "([A-Za-z])"
-prefixes = "(Mr|St|Mrs|Ms|Dr)[.]"
-suffixes = "(Inc|Ltd|Jr|Sr|Co)"
-starters = "(Mr|Mrs|Ms|Dr|He\s|She\s|It\s|They\s|Their\s|Our\s|We\s|But\s|However\s|That\s|This\s|Wherever)"
-acronyms = "([A-Z][.][A-Z][.](?:[A-Z][.])?)"
-websites = "[.](com|net|org|io|gov)"
+def remove_emojis(text):
+    emoji_pattern = re.compile("["
+                               u"\U0001F600-\U0001F64F"  # emoticons
+                               u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+                               u"\U0001F680-\U0001F6FF"  # transport & map symbols
+                               u"\U0001F700-\U0001F77F"  # alchemical symbols
+                               u"\U0001F780-\U0001F7FF"  # Geometric Shapes Extended
+                               u"\U0001F800-\U0001F8FF"  # Supplemental Arrows-C
+                               u"\U0001F900-\U0001F9FF"  # Supplemental Symbols and Pictographs
+                               u"\U0001FA00-\U0001FA6F"  # Chess Symbols
+                               u"\U0001FA70-\U0001FAFF"  # Symbols and Pictographs Extended-A
+                               u"\U00002702-\U000027B0"  # Dingbats
+                               u"\U000024C2-\U0001F251" 
+                               "]+", flags=re.UNICODE)
+    return emoji_pattern.sub(r'', text)
 
-def split_into_sentences(text):
-    text = " " + text + "  "
-    text = text.replace("\n"," ")
-    text = re.sub(prefixes,"\\1<prd>",text)
-    text = re.sub(websites,"<prd>\\1",text)
-    if "Ph.D" in text: text = text.replace("Ph.D.","Ph<prd>D<prd>")
-    text = re.sub("\s" + alphabets + "[.] "," \\1<prd> ",text)
-    text = re.sub(acronyms+" "+starters,"\\1<stop> \\2",text)
-    text = re.sub(alphabets + "[.]" + alphabets + "[.]" + alphabets + "[.]","\\1<prd>\\2<prd>\\3<prd>",text)
-    text = re.sub(alphabets + "[.]" + alphabets + "[.]","\\1<prd>\\2<prd>",text)
-    text = re.sub(" "+suffixes+"[.] "+starters," \\1<stop> \\2",text)
-    text = re.sub(" "+suffixes+"[.]"," \\1<prd>",text)
-    text = re.sub(" " + alphabets + "[.]"," \\1<prd>",text)
-    if "”" in text: text = text.replace(".”","”.")
-    if "\"" in text: text = text.replace(".\"","\".")
-    if "!" in text: text = text.replace("!\"","\"!")
-    if "?" in text: text = text.replace("?\"","\"?")
-    text = text.replace(".",".<stop>")
-    text = text.replace("?","?<stop>")
-    text = text.replace("!","!<stop>")
-    text = text.replace("<prd>",".")
-    sentences = text.split("<stop>")
-    sentences = sentences[:-1]
-    sentences = [s.strip() for s in sentences]
-    return sentences
+def stickyPreprocess(data):
+    def processText(text):
+        result = []
+        for letter_id in range(len(text) - 2):
+            prev, letter, after = text[letter_id], text[letter_id + 1], text[letter_id + 2]
+
+            if letter in punctuation:
+                if prev in allcase_string:
+                    result.append(letter_id + 1)
+                if after in allcase_string:
+                    result.append(letter_id + 2)
+
+            if letter in uppercase_string and prev in lowercase_string and letter_id != 0:
+                result.extend([letter_id, letter_id + 1])
+
+        for index in reversed(result):
+            text = text[:index] + " " + text[index:]
+
+        return text
+
+    data['text'] = data['text'].apply(processText)
+    return data
+
+def abbreviationPreprocess(data):
+    def replaceWord(word, dictionary):
+        return dictionary.get(word, word)
+
+    def processText(text):
+        annotator_text = annotator.tokenize(text)
+
+        tokens = [it for sublist in annotator_text for it in sublist if it != '_']
+        tokens = [replaceWord(it.lower(), abbreviation_dict) for it in tokens]
+
+        sentences = [' '.join(sublist) for sublist in annotator_text]
+
+        return pd.Series([' '.join(tokens), sentences], index=['text', 'sentences'])
+
+    data[['text', 'sentences']] = data['text'].apply(processText)
+
+    return data
+
+def sentimentCal(sentences):
+    sentiments = [underthesea.sentiment(text) for text in sentences]
+    return sentiments
 
 def predictions_and_other(df_in):
-    df_in["reviewText"] = [item + "." for item in df_in["reviewText"]]
-    df_in["reviewLength"] = [len(item) for item in df_in["reviewText"]]
-    df_in["reviewHour"] = [item.hour for item in df_in["dtime"]]
-    df_in["priceRank"] = [1 if price == '$' else 2 if price == '$$' else 3 if price == '$$$' else 0 for price in df_in['price']]
+    # Format "publishedAtDate" to datetime
+    df_in['publishedAtDate'] = df_in['publishedAtDate'].apply(lambda x: formatToDatetime(x))
 
-    df_in['sentences'] = df_in['reviewText'].apply(split_into_sentences)
-    df_in['sentiments'] = df_in.apply(lambda row: [TextBlob(sentence).sentiment[0] for sentence in row['sentences']] if len(row['sentences']) > 0 else [TextBlob(row['reviewText']).sentiment[0]], axis=1)
+    df_in = unicode(df_in)
+    df_in['text'] = df_in['text'].apply(remove_emojis)
+    df_in = stickyPreprocess(df_in)
+    df_in = abbreviationPreprocess(df_in)
 
-    count_pos = df_in['sentiments'].apply(lambda sentiments: sum(sentiment > 0 for sentiment in sentiments))
-    count_neg = len(df_in['sentiments'][0]) - count_pos
+    df_in["sentiment"] = df_in["sentences"].apply(sentimentCal)
+    df_in['sentiment'] = df_in['sentiment'].apply(lambda sentiments: ["neutral" if sentiment is None else sentiment for sentiment in sentiments])
 
-    df_in['Pos_prop'] = count_pos / len(df_in['sentiments'][0])
-    df_in['Neg_prop'] = count_neg / len(df_in['sentiments'][0])
+    df_in["text"] = [item + " ." for item in df_in["text"]]
+    df_in["reviewHour"] = [item.hour for item in df_in["publishedAtDate"]]
+    df_in["reviewLength"] = [len(item) for item in df_in["text"]]
 
-    model = joblib.load(".\models\model.joblib")
+    count_pos = df_in['sentiment'].apply(lambda sentiments: sum(sentiment == "positive" for sentiment in sentiments))
+    count_neg = df_in['sentiment'].apply(lambda sentiments: sum(sentiment == "negative" for sentiment in sentiments))
 
-    selected_columns = ["Pos_prop", "Neg_prop", "reviewLength", "priceRank", "reviewHour"]
+    df_in['num_sentiments'] = df_in['sentiment'].apply(lambda sentiments: len(sentiments) if sentiments else 0)
+
+    df_in['pos_prop'] = count_pos / df_in['num_sentiments']
+    df_in['neg_prop'] = count_neg / df_in['num_sentiments']
+
+    model = joblib.load("..\models\model.joblib")
+
+    selected_columns = ["pos_prop", "neg_prop", "reviewLength", "reviewHour"]
     X = df_in[selected_columns]
 
     predictions = model.predict(X)
 
     df_in["Rating_predict"] = predictions
-
-def top_nouns_by_sentiment_range(df_in, counters):
-    noun_freq_by_id_sentiment_range = {}
-
-    text_column = 'sentences'
-    sentiment_column = 'sentiments'
-    id_column = 'gPlusPlaceId'
-    negative_range = (-1, 0)
-    positive_range = (0, 1)
-    n = 20
-
-    for index, row in df_in.iterrows():
-        sentiments = row[sentiment_column]
-        if not sentiments:
-            continue
-
-        text_data = row[text_column]
-        if not text_data:
-            continue
-
-        place_id = row[id_column]
-        place_name = row["name"]
-
-        if place_id not in noun_freq_by_id_sentiment_range:
-            noun_freq_by_id_sentiment_range[place_id] = {
-                'negative': Counter(),
-                'positive': Counter(),
-                # 'name': string
-            }
-
-        for i, sentiment in enumerate(sentiments):
-            if negative_range[0] <= sentiment < negative_range[1]:
-                sentiment_label = 'negative'
-            elif positive_range[0] <= sentiment <= positive_range[1]:
-                sentiment_label = 'positive'
-            else:
-                continue
-
-            tokens = word_tokenize(text_data[i])
-            tagged_words = pos_tag(tokens)
-
-            nouns = [word for word, pos in tagged_words if pos.startswith('N')]
-            stop_words = set(stopwords.words('english'))
-            nouns = [word.lower() for word in nouns if word.lower() not in stop_words]
-
-            noun_freq_by_id_sentiment_range[place_id][sentiment_label].update(nouns)
-
-    # Extract the top n items for each sentiment category
-    top_nouns_by_id_sentiment_range = {}
-    for place_id, sentiment_counts in noun_freq_by_id_sentiment_range.items():
-        top_nouns_by_id_sentiment_range[place_id] = {}
-        for sentiment_label, noun_counter in sentiment_counts.items():
-            top_nouns_by_id_sentiment_range[place_id][sentiment_label] = dict(noun_counter.most_common(n))
-        top_nouns_by_id_sentiment_range[place_id]['name'] = place_name
-
-    counters = merge_data(counters, top_nouns_by_id_sentiment_range)
-
-def merge_data(dict1, dict2):
-    merged_data = dict1
-
-    for place_id, data2 in dict2.items():
-        if place_id in merged_data:
-            # Update counters
-            merged_data[place_id]['negative'].update(data2.get('negative', Counter()))
-            merged_data[place_id]['positive'].update(data2.get('positive', Counter()))
-
-            # Update other values, for example, 'name'
-            merged_data[place_id]['name'] = data2.get('name', merged_data[place_id]['name'])
-        else:
-            # If the place_id doesn't exist in the first dictionary, add it
-            merged_data[place_id] = data2.copy()
-
-    return merged_data
