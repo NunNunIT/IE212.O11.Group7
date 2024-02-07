@@ -62,8 +62,8 @@ def create_dashboard_option_layout():
                     html.Label('Places'),
                     dcc.Dropdown(
                         id='place-dropdown',
-                        options= [{'label': 'ChIJp67U2gspdTERdMFp0ZUhXT4', 'value': 'ChIJp67U2gspdTERdMFp0ZUhXT4'}],
-                        value= 'ChIJp67U2gspdTERdMFp0ZUhXT4',
+                        options= [{'label': 'ChIJT9Pk5PsudTER3sQCMS5UC_0', 'value': 'ChIJT9Pk5PsudTER3sQCMS5UC_0'}],
+                        value= 'ChIJT9Pk5PsudTER3sQCMS5UC_0',
                         placeholder='Chọn địa điểm',  # Nhãn placeholder
                     ),
                 ], className = 'dropdown-item'),
