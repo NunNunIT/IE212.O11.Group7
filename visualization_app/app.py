@@ -13,9 +13,9 @@ from recomended_layout import *
 # Connect to local server
 client = MongoClient("mongodb://127.0.0.1:27017/")
 # Create database called animals
-mydb = client["animals"]
+mydb = client["ie212_o11_group7"]
 # Create Collection (table) called shelterA
-collection = mydb.shelterA
+collection_reviews = mydb.reviews
 
 app = dash.Dash(__name__, suppress_callback_exceptions=True)
 
@@ -23,30 +23,34 @@ app = dash.Dash(__name__, suppress_callback_exceptions=True)
 # Layout của Dash App
 app.layout = html.Div([
     create_introduct_layout(),
+    html.H1("Overview", className="centered-heading", id="see-here"),
     html.Div([
         create_introduct_overview_layout()
     ], className="dashboard-container"),
-    html.H1("Dashboard", className="centered-heading", id="see-here"),
+    html.H1("Dashboard", className="centered-heading"),
     html.Div([
         create_dashboard_option_layout(),
         create_dashboard_total_layout(),
         html.Div([
                 dcc.Graph(id='dashboard-review-chart'),
-                dcc.Graph(id='dashboarb-fig-star'),
+                dcc.Graph(id='dashboard-fig-star'),
             ], className='contain-layout'),
         html.Div(id='mongo-datatable', children=[]),
         # dcc.Graph(id='dashboard-map'),
     ], className="dashboard-container"),
     html.H1("Categories", className="centered-heading"),
     html.H1("Recomended System", className="centered-heading"),
-    create_PlaceName_PlaceID_Dropdown(),
-    create_SearchButton_layout(),
     html.Div([
-        create_dashtable_result(),
-        dcc.Store(id='result-store', data=df_result.to_dict('records')),
-    ], className='contain-layout'),
+        create_PlaceName_PlaceID_Dropdown(),
+        create_SearchButton_layout(),
+        html.Div([
+            create_dashtable_result(),
+            dcc.Store(id='result-store', data=df_result.to_dict('records')),
+        ], className='contain-layout'),
+    ], className="dashboard-container"),
     html.H1("Sentiment", className="centered-heading"),
-
+    html.Div([
+    ], className="dashboard-container"),
     # activated once/week or when page refreshed
     dcc.Interval(id='interval_db', interval=86400000 * 7, n_intervals=0),
     html.Button("Save to Mongo Database", id="save-it"),
@@ -63,10 +67,10 @@ def overview_display(select_year='All', select_place='All'):
     query = {}
     
     # Đếm số lượng đánh giá (ratings), số lượng bình luận (reviews), số lượng địa điểm (places) và số lượng người dùng (users)
-    ratings = collection.count_documents(query)
+    ratings = collection_reviews.count_documents(query)
 
-    places = len(collection.distinct("placeId", query))
-    users = len(collection.distinct("reviewerId", query))
+    places = len(collection_reviews.distinct("placeId", query))
+    users = len(collection_reviews.distinct("reviewerId", query))
 
     return [ratings, places, users]
 ########## END OF INTRODUCT TOTAL ############################################################
@@ -75,13 +79,12 @@ def overview_display(select_year='All', select_place='All'):
 ########### BEGIN OF DASH BOARD ################################################################
 # Dashboard - 1. Callback to update dropdown options *************************
 def get_dropdown_options(field_name):
-    distinct_values = collection.distinct(field_name) 
+    distinct_values = collection_reviews.distinct(field_name) 
     options = [
         {'label': str(value), 'value': str(value)}
         for value in distinct_values
     ]
     
-    options.insert(0, {'label': 'All', 'value': 'All'})
     return options
 
 @app.callback(
@@ -96,10 +99,9 @@ def update_dropdown(n_intervals):
 # Dashboard - 2. Display with data from Mongo database *************************
 @app.callback([Output('mongo-datatable', 'children'),
                Output('total-ratings', 'children'),
-               Output('total-places', 'children'),
                Output('total-user', 'children'),
                Output('dashboard-review-chart', 'figure'),
-               Output('dashboarb-fig-star', 'figure'),],
+               Output('dashboard-fig-star', 'figure'),],
               [Input('year-dropdown', 'value'),
                Input('place-dropdown', 'value')])
 def dashboard_display(select_year='All', select_place='All'):
@@ -112,10 +114,24 @@ def dashboard_display(select_year='All', select_place='All'):
     if select_place != 'All':
         query["placeId"] = select_place
 
-    # Convert the Collection (table) date to a pandas DataFrame with applied filter
-    df = pd.DataFrame(list(collection.find(query)))
+    # Convert the collection_reviews (table) date to a pandas DataFrame with applied filter
+    df = pd.DataFrame(list(collection_reviews.find(query, {
+    "reviewId": 1,
+    "placeId": 1,
+    "title": 1,
+    "categories": 1,
+    "address": 1,
+    "reviewerId": 1,
+    "name": 1,
+    "stars": 1,
+    "text": 1,
+    "publishedAtDate": 1,
+    "Predict_rating": 1,
+    })))
+    
     # Drop the _id column generated automatically by Mongo
-    df = df.iloc[:, 1:]
+    df.drop('_id', axis=1, inplace=True)
+    print(df.head(20))
     detail_table = [
             dash_table.DataTable(
                 id='my-table',
@@ -144,18 +160,16 @@ def dashboard_display(select_year='All', select_place='All'):
         ]
     
     # Đếm số lượng đánh giá (ratings), số lượng bình luận (reviews), số lượng địa điểm (places) và số lượng người dùng (users)
-    ratings = collection.count_documents(query)
-
-    places = len(collection.distinct("placeId", query))
-    users = len(collection.distinct("reviewerId", query))
+    ratings = collection_reviews.count_documents(query)
+    users = len(collection_reviews.distinct("reviewerId", query))
 
     # Draw graph
-    statistics_df = calculate_reviews_dashboarb(df)
+    statistics_df = calculate_reviews_dashboard(df)
     fig_bar = draw_chart_reviews_dashboard(statistics_df)
 
     fig_pie = draw_chart_reviews_by_star_dashboard(df)
     
-    return [detail_table, ratings, places, users, fig_bar, fig_pie]
+    return [detail_table, ratings, users, fig_bar, fig_pie]
 
 ########## END OF DASHBOARD ################################################################################
 
@@ -181,8 +195,8 @@ def add_row(n_clicks, rows, columns):
 )
 def save_data(n_clicks, data):
     dff = pd.DataFrame(data)
-    collection.delete_many({})
-    collection.insert_many(dff.to_dict('records'))
+    collection_reviews.delete_many({})
+    collection_reviews.insert_many(dff.to_dict('records'))
     return ""
 
 ########## BEGIN OF RECOMENDED SYSTEM ################################################################################
@@ -241,6 +255,10 @@ def update_links(data):
     urls = [row.get('url', '') for row in data]
     links = [html.A(href=url, target='_blank', children="Xem", className='button2') for url in urls]
     return links
+
+########## END OF RECOMENDED SYSTEM ################################################################################
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)

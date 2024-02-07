@@ -58,8 +58,8 @@ def create_dashboard_option_layout():
                     html.Label('Places'),
                     dcc.Dropdown(
                         id='place-dropdown',
-                        options= [{'label': 'All', 'value': 'All'}],
-                        value= 'All',  # Giá trị mặc định là All
+                        options= [{'label': 'ChIJp67U2gspdTERdMFp0ZUhXT4', 'value': 'ChIJp67U2gspdTERdMFp0ZUhXT4'}],
+                        value= 'ChIJp67U2gspdTERdMFp0ZUhXT4',
                         placeholder='Chọn địa điểm',  # Nhãn placeholder
                     ),
                 ], className = 'dropdown-item'),
@@ -73,17 +73,13 @@ def create_dashboard_total_layout():
                     html.Div(id='total-ratings', children=0)
                     ], className = 'total-item'),
                     html.Div([
-                        html.Label("Places"),
-                        html.Div(id='total-places', children=0)
-                    ], className = 'total-item'),
-                    html.Div([
                         html.Label("User"),
                         html.Div(id='total-user', children=0)
                     ], className = 'total-item'),
                 ], className='contain2-layout'),
             ])
 
-def calculate_reviews_dashboarb(dataframe_input):
+def calculate_reviews_dashboard(dataframe_input):
     temp_df = dataframe_input.copy()
 
     # Creating columns for each rating
@@ -158,9 +154,9 @@ def draw_chart_reviews_dashboard(dataframe_input):
     return fig
 
 # Grouping by year and calculating the sum for each group
-def calculate_reviews_by_star_dashboarb(dataframe_input):
+def calculate_reviews_by_star_dashboard(dataframe_input):
     df_temp = dataframe_input.copy()
-    df_temp = calculate_reviews_dashboarb(df_temp)
+    df_temp = calculate_reviews_dashboard(df_temp)
 
     result_df = df_temp.agg({
         '0_star': 'sum',
@@ -182,7 +178,7 @@ def calculate_reviews_by_star_dashboarb(dataframe_input):
 def draw_chart_reviews_by_star_dashboard(dataframe_input):
     # Filter data for years from 2010 onwards
     df_temp = dataframe_input.copy()
-    df_temp, rating_mean = calculate_reviews_by_star_dashboarb(df_temp)
+    df_temp, rating_mean = calculate_reviews_by_star_dashboard(df_temp)
     selected_rows = df_temp[df_temp['index'].str.endswith('_star')]
     labels = selected_rows['index'].tolist()
     sizes = selected_rows[0].tolist()
