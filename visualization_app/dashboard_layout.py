@@ -78,7 +78,7 @@ def create_info_layout():
                     html.Div(id='info-address', children=[])
                 ], className = 'row-item'),
                 html.Div([
-                    html.Label("Categories: "),
+                    html.Label("Categories:  "),
                     html.Div(id='info-categories', children=[])
                 ], className = 'row-item'),
             ], className='row-layout')

@@ -54,6 +54,7 @@ app.layout = html.Div([
     html.H1("Sentiment", className="centered-heading"),
     html.Div([
         create_sentiment_option_layout(),
+        create_info_sentiments_layout(),
         html.Div([
                 dcc.Graph(id='sentiment-positive-chart'),
                 dcc.Graph(id='sentiment-negative-chart'),
@@ -161,10 +162,6 @@ def dashboard_display(select_year='All', select_place='All'):
     # Convert the collection_reviews (table) date to a pandas DataFrame with applied filter
     df = pd.DataFrame(list(collection_reviews.find(query, {
     "reviewId": 1,
-    "placeId": 1,
-    "title": 1,
-    "categories": 1,
-    "address": 1,
     "reviewerId": 1,
     "name": 1,
     "stars": 1,
@@ -275,6 +272,31 @@ def update_links(data):
 ########## END OF RECOMENDED SYSTEM ################################################################################
 
 ########## BEGIN OF SENTIMENTS ################################################################################
+@app.callback(
+    [Output('info-sentiments-name', 'children'),
+     Output('info-sentiments-address', 'children'),
+     Output('info-sentiments-categories', 'children')],
+    [Input('place-sentiment-dropdown', 'value')]  # Thêm input component cần thiết nếu cần
+)
+def update_sentiments_info(select_place):
+    # Truy vấn để lấy dữ liệu từ MongoDB
+    query = {"placeId": select_place}
+
+    # Thực hiện truy vấn và lấy dữ liệu từ MongoDB
+    result = collectionkha.find_one(query, {"title": 1, "categories": 1, "address": 1})
+
+    # Kiểm tra nếu không tìm thấy dữ liệu
+    if result is None:
+        return None, None, None
+
+    # Trích xuất thông tin từ kết quả truy vấn
+    name = result.get("title", "")
+    categories = result.get("categories", "")
+    address = result.get("address", "")
+
+    # Trả về các giá trị tương ứng
+    return name, address, categories
+
 @app.callback([Output('sentiment-positive-chart', 'figure'),
                Output('sentiment-negative-chart', 'figure')],
               [Input('year-sentiment-dropdown', 'value'),

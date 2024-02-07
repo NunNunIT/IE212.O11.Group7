@@ -22,8 +22,8 @@ def create_sentiment_option_layout():
                     html.Label('Places'),
                     dcc.Dropdown(
                         id='place-sentiment-dropdown',
-                        options= [{'label': 'ChIJp67U2gspdTERdMFp0ZUhXT4', 'value': 'ChIJp67U2gspdTERdMFp0ZUhXT4'}],
-                        value= 'ChIJp67U2gspdTERdMFp0ZUhXT4',
+                        options= [{'label': 'ChIJqSWgMcYvdTEReOwrjRd36W8', 'value': 'ChIJqSWgMcYvdTEReOwrjRd36W8'}],
+                        value= 'ChIJqSWgMcYvdTEReOwrjRd36W8',
                         placeholder='Chọn địa điểm',  # Nhãn placeholder
                     ),
                 ], className = 'dropdown-item'),
@@ -68,3 +68,18 @@ def create_fig_sentiments(data_list, color_c, text):
             textposition='auto', marker_color=color_c)]) # Chú ý marker_color ở đây
     fig.update_layout(title_text=text, xaxis_title="Words", yaxis_title="Frequency")
     return fig
+
+def create_info_sentiments_layout():
+    return html.Div([
+                html.Div([
+                html.Div(id='info-sentiments-name', className = 'bold-text', children=[])
+                ], className = 'row-item'),
+                html.Div([
+                    html.Div(id='info-sentiments-address', children=[])
+                ], className = 'row-item'),
+                html.Div([
+                    html.Label("Categories:  "),
+                    html.Div(id='info-sentiments-categories', children=[])
+                ], className = 'row-item'),
+            ], className='row-layout')
+
