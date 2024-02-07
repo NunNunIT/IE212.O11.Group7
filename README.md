@@ -60,3 +60,7 @@ python app.py
 ### B7: Mở website có 2 cách 
 * Cách 1: Ctrl + Click vào đường link http://127.0.0.1:8050/ trên terminal
 * Cách 2: Mở trình duyệt bất kỳ và dán đường dẫn sau http://127.0.0.1:8050/
+
+## Ảnh website
+![image](https://github.com/NunNunIT/IE212.O11.Group7/assets/134728391/44cb0e8e-d1aa-4413-8378-051f4427cc73)
+
