@@ -34,6 +34,7 @@ Dữ liệu kết quả bao gồm:
 - ```data_result/places_results.jsonl.gz```: Đây là dữ liệu chứa các địa điểm được tính từ năm 30/01/2024 trở về trước đã được xử lý.
 - ```data_result/review_results.jsonl.gz```: Đây là dữ liệu chứa các đánh giá của các địa điểm được tính từ 30/01/2024 trở về trước đã được xử lý
 
+Dữ liệu có thể tải tại đây: https://drive.google.com/drive/folders/1cPzsr6DJnKSKsKvxrmfRsA0HQgQwn6SQ?usp=drive_link
 
 ## Hướng dẫn cài đặt - Running
 ### Yêu cầu cài đặt trên máy:
@@ -46,7 +47,7 @@ Dữ liệu kết quả bao gồm:
 git clone https://github.com/NunNunIT/IE212.O11.Group7.git  
 ```
 ### B2: Tải dữ liệu về thư mục ```data_vi_tphcm```
-Truy cập https://drive.google.com/drive/folders/1xjVmr87n6hHU5PZyAGD47Zci6-MUhJgQ và tải 3 file về
+Truy cập https://drive.google.com/drive/folders/1cPzsr6DJnKSKsKvxrmfRsA0HQgQwn6SQ?usp=drive_link và tải 3 file về
 
 Đảm bảo rằng được lưu đúng thư mục ```data_vi_tphcm```
 
@@ -105,7 +106,8 @@ Lúc này đây, trang web đã được hoạt động
 * Cách 2: Mở trình duyệt bất kỳ và dán đường dẫn sau http://127.0.0.1:8050/
 
 ## Ảnh app visualization
-![image](https://github.com/NunNunIT/IE212.O11.Group7/assets/134728391/44cb0e8e-d1aa-4413-8378-051f4427cc73)
+![image](https://github.com/NunNunIT/IE212.O11.Group7/assets/145759907/dd5d4e7d-6ad3-475e-827d-ee1e16bca0ae)
+
 
 # THAM KHẢO
 
