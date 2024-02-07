@@ -26,7 +26,7 @@
     justify-content: flex-start; /* or justify-content: space-between; */
     gap: 10px;
     padding-top: 12px;
-}
+} 
 /* Định dạng dropdown để chiếm không gian rộng đầy đủ */
 .contain-layout>div {
     width: 100%;
@@ -63,4 +63,28 @@
 .live-stream-text {
     font-size:24px;
     text-align: center;
+}
+
+/* CSS cho các thành phần trong row-item nằm cùng một dòng */
+.row-item {
+    display: flex;  /* Sử dụng Flexbox */
+    flex-direction: row;  /* Sắp xếp các thành phần theo hướng ngang */
+    align-items: center;  /* Căn giữa các thành phần theo chiều dọc */
+}
+
+.row-item label{
+
+}
+
+/* CSS cho các row-item nằm dọc */
+.row-layout {
+    display: flex;  /* Sử dụng Flexbox */
+    flex-direction: column;  /* Sắp xếp các row-item theo hướng dọc */
+    align-items: center; 
+}
+
+.bold-text {
+    padding-top: 12px;
+    font-weight: bold;
+    font-size: 24px;
 }

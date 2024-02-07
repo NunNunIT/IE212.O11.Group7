@@ -33,6 +33,7 @@ app.layout = html.Div([
     html.H1("Dashboard", className="centered-heading"),
     html.Div([
         create_dashboard_option_layout(),
+        create_info_layout(),
         create_dashboard_total_layout(),
         html.Div([
                 dcc.Graph(id='dashboard-review-chart'),
@@ -63,8 +64,6 @@ app.layout = html.Div([
     # activated once/week or when page refreshed
     # dcc.Interval(id='interval_db', interval=86400000 * 7, n_intervals=0),
     dcc.Interval(id='interval_db', interval=10*1000, n_intervals=0),
-    html.Button("Save to Mongo Database", id="save-it"),
-    html.Button('Add Row', id='adding-rows-btn', n_clicks=0),
 ], className='main-container')
 
 ########## BEGIN OF INTRODUCT TOTAL ############################################################
@@ -115,6 +114,31 @@ def update_dropdown(n_intervals):
     dropdown_place_options = get_dropdown_options("placeId")
 
     return [dropdown_place_options, dropdown_place_options]
+
+@app.callback(
+    [Output('info-name', 'children'),
+     Output('info-address', 'children'),
+     Output('info-categories', 'children')],
+    [Input('place-dropdown', 'value')]  # Thêm input component cần thiết nếu cần
+)
+def update_info(select_place):
+    # Truy vấn để lấy dữ liệu từ MongoDB
+    query = {"placeId": select_place}
+
+    # Thực hiện truy vấn và lấy dữ liệu từ MongoDB
+    result = collectionkha.find_one(query, {"title": 1, "categories": 1, "address": 1})
+
+    # Kiểm tra nếu không tìm thấy dữ liệu
+    if result is None:
+        return None, None, None
+
+    # Trích xuất thông tin từ kết quả truy vấn
+    name = result.get("title", "")
+    categories = result.get("categories", "")
+    address = result.get("address", "")
+
+    # Trả về các giá trị tương ứng
+    return name, address, categories
 
 # Dashboard - 2. Display with data from Mongo database *************************
 @app.callback([Output('mongo-datatable', 'children'),
@@ -190,33 +214,7 @@ def dashboard_display(select_year='All', select_place='All'):
     
     return [detail_table, ratings, users, fig_bar, fig_pie]
 
-########## END OF DASHBOARD ################################################################################
-
-# Add new rows to DataTable ***********************************************
-@app.callback(
-    Output('my-table', 'data'),
-    [Input('adding-rows-btn', 'n_clicks')],
-    [State('my-table', 'data'),
-     State('my-table', 'columns')],
-)
-def add_row(n_clicks, rows, columns):
-    if n_clicks > 0:
-        rows.append({c['id']: '' for c in columns})
-    return rows
-
-
-# Save new DataTable data to the Mongo database ***************************
-@app.callback(
-    Output("placeholder", "children"),
-    Input("save-it", "n_clicks"),
-    State("my-table", "data"),
-    prevent_initial_call=True
-)
-def save_data(n_clicks, data):
-    dff = pd.DataFrame(data)
-    collection_reviews.delete_many({})
-    collection_reviews.insert_many(dff.to_dict('records'))
-    return ""
+########## END OF DASHBOARD ################################################################################"
 
 ########## BEGIN OF RECOMENDED SYSTEM ################################################################################
 # Callback để động cập nhật danh sách tùy chọn của dropdown PlaceID dựa trên giá trị được chọn trong dropdown placename

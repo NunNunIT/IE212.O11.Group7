@@ -69,6 +69,20 @@ def create_dashboard_option_layout():
                 ], className = 'dropdown-item'),
             ], className='contain-layout')
 
+def create_info_layout():
+    return html.Div([
+                html.Div([
+                html.Div(id='info-name', className = 'bold-text', children=[])
+                ], className = 'row-item'),
+                html.Div([
+                    html.Div(id='info-address', children=[])
+                ], className = 'row-item'),
+                html.Div([
+                    html.Label("Categories: "),
+                    html.Div(id='info-categories', children=[])
+                ], className = 'row-item'),
+            ], className='row-layout')
+
 def create_dashboard_total_layout():
     return html.Div([
                 html.Div([
@@ -100,7 +114,9 @@ def calculate_reviews_dashboard(dataframe_input):
 
 def draw_chart_reviews_dashboard(dataframe_input):
     temp_df2 = dataframe_input.copy()
-    temp_df2['publishedAtDate'] = pd.to_datetime(temp_df2['publishedAtDate'])
+
+    # Chuyển đổi cột publishedAtDate thành kiểu datetime
+    temp_df2['publishedAtDate'] = pd.to_datetime(temp_df2['publishedAtDate'], unit='ms')
     # Trích xuất năm từ trường publishedAtDate
     temp_df2['year'] = temp_df2['publishedAtDate'].dt.year
 
