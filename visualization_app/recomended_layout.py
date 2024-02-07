@@ -131,7 +131,7 @@ model = NearestNeighbors(n_neighbors=6, algorithm='ball_tree')
 model.fit(tfidf_matrix)
 
 # Hàm khuyến nghị
-def recommend(gPlusPlaceId):
+def recommend(gPlusPlaceId, num_recommendations=10):
     # Lấy thông tin từ dataset dựa trên gPlusPlaceId
     user_info = data[data['placeId'] == gPlusPlaceId][['title', 'categories', 'average_rating', 'location/lat',
                                                           'location/lng', 'placeId','url']]
@@ -143,7 +143,7 @@ def recommend(gPlusPlaceId):
     input_coords = [input_lat, input_lng]
 
     idx = data[data['placeId'] == gPlusPlaceId].index[0]
-    distances, indices = model.kneighbors(tfidf_matrix[idx])
+    distances, indices = model.kneighbors(tfidf_matrix[idx], n_neighbors=num_recommendations+1)  # +1 để bao gồm chính điểm đầu tiên
     recommended_places = data.loc[indices[0][1:]]
 
     # Kiểm tra khoảng cách giữa vị trí nhập vào và vị trí của các địa điểm được khuyến nghị
@@ -159,14 +159,16 @@ def recommend(gPlusPlaceId):
     # Sắp xếp theo average_rating giảm dần
     recommended_places = recommended_places.sort_values(by='average_rating', ascending=False)
 
-    return user_info, recommended_places[['title','categories','average_rating','location/lat','location/lng','placeId','url']]
+    # Chỉ lấy num_recommendations đầu tiên
+    recommended_places = recommended_places.head(num_recommendations)
 
+    return user_info, recommended_places[['title','categories','average_rating','location/lat','location/lng','placeId','url']]
 # average_ratings = df.groupby('gPlusPlaceId')['average_rating'].mean().reset_index()
 # merged_data = pd.merge(average_ratings, df[['gPlusPlaceId', 'gps', 'categories', 'name']], on='gPlusPlaceId', how='left')
 # df1 = merged_data.drop_duplicates(subset='gPlusPlaceId', keep='first')
 
 def recommendation(placeid):
-    user_info, result = recommend(placeid)
+    user_info, result = recommend(placeid, num_recommendations=10)
     # Ghi thông tin của user_input và kết quả vào cùng một tệp CSV
     with open('result_HCM1.csv', 'w', newline='', encoding='utf-8-sig') as file:
         writer = csv.writer(file)
