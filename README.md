@@ -1,4 +1,4 @@
-# [IE212.O11.Group7] - Tên đề tài
+# [IE212.O11.Group7] - Location Recommendation System based on Google Review Rating Prediction
 
 * Trường Đại học Công nghệ Thông tin, Đại học Quốc gia Thành phố Hồ Chí Minh (ĐHQG-HCM)
 * Khoa: Khoa học và kỹ thuật thông tin (KTTT)
@@ -14,66 +14,49 @@
 |4.  | Nguyễn Huy Hoàng | 21522093
 
 ##  Giới thiệu - Introduction
-Nội dung TEXT TEXT viết sau
-
-**Data Source**: https://cseweb.ucsd.edu/~jmcauley/datasets.html#google_local
-
-**In collaboration with**: [Shiyi Hua](https://www.linkedin.com/in/shiyi-letty-hua-2a7117129/), [Ziyuan Yan](https://www.linkedin.com/in/ziyuan-esther-yan-664732132/)
-
-**Models**:
-Nội dung
+Trong đồ án này, chúng tôi thực hiện xây dựng hệ khuyến nghị nhằm gợi ý địa điểm dựa trên dự đoán điểm đánh giá của các nhận xét trên Google. Chúng tôi sử dụng tập dữ liệu tự thu thập trên các địa bàn ở Thành Phố Hồ Chí Minh để thực hiện và huấn luyện mô hình. Chúng tôi sử dụng mô hình hồi quy để huấn luyện mô hình sau đó dữ liệu này sẽ qua Spark Streaming và Spark SQL để xử lý, truy vấn và trích xuất dữ liệu, và được lưu vào hệ quản trị cơ sở dữ liệu MongoDB. Sau sử dụng mô hình k-Nearest Neighbors (kNN) với thuật toán "Brute Force" để tìm các địa điểm gần nhất.
 
 ## Hướng dẫn cài đặt - Running
-### B1: Clone repo 
-
+### Yêu cầu cài đặt trên máy:
+* Python
+* MongoDB
+* Kafka
+* 
+### B1: Clone repo về máy
 ```
 git clone https://github.com/NunNunIT/IE212.O11.Group7.git  
 ```
-### B2: Tải dataset
-Vì dataset quá lớn nên có thể không clone 3 file dataset về được. Thực hiện các bước sau
-
-**Lưu ý:** Phải tải về trong thư mục ```data```
-
-Truy cập: https://jmcauley.ucsd.edu/data/googlelocal/
-- users.clean.json.gz
-- reviews.clean.json.gz
-- places.clean.json.gz
-
-Hoặc 
-
-Truy cập https://cseweb.ucsd.edu/~jmcauley/datasets.html#google_local
-
-Tìm kiếm Crtl + F: 
-``` 
-Google Local Reviews (2018) 
+### B2: Chạy tệp 'requirements.txt'
 ```
-Tải các file về
+pip install -r requirements.txt
+```
+### B3: Chạy zookeeper, server 
+* cd đến thư mục kafka
+```
+bin\windows\zookeeper-server-start.bat config\zookeeper.properties
+```
+* mở thêm 1 terminal cd đến thư mục kafka
+```
+bin\windows\kafka-server-start.bat config\server.properties
+```
 
+### B4: Chạy 'producer.ipynb', 'consumer.ipynb' trong thư mục 'src'
 
-### B3: Truy cập vào file model.ipynb trong thư mục model
+### B5: Chạy 'mongoDB.py'
+```
+cd data_result
+```
+```
+python mongoDB.py 
+```
 
-Chạy file
-
-### B4: Visualization
-      Cài đặt packages cần thiết
-      ```
-      pip install -r requirements.txt
-      ```
-      ```
-      python dashTemplate.py
-      ```
-
-## Sản phẩm - 
-File report
-Nhận định blah blah
- 
-## Tham khảo - References
-Translation-based factorization machines for sequential recommendation
-Rajiv Pasricha, Julian McAuley
-RecSys, 2018
-[pdf](https://cseweb.ucsd.edu/~jmcauley/pdfs/recsys18a.pdf)
-
-Translation-based recommendation
-Ruining He, Wang-Cheng Kang, Julian McAuley
-RecSys, 2017
-[pdf](https://cseweb.ucsd.edu/~jmcauley/pdfs/recsys17.pdf)
+### B6: Chạy 'app.py'
+```
+cd visualization_app
+```
+```
+python app.py 
+```
+### B7: Mở website có 2 cách 
+* Cách 1: Ctrl + Click vào đường link http://127.0.0.1:8050/ trên terminal
+* Cách 2: Mở trình duyệt bất kỳ và dán đường dẫn sau http://127.0.0.1:8050/
