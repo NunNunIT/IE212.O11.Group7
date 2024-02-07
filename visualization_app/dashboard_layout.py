@@ -25,6 +25,24 @@ def create_introduct_layout():
                 html.A("See how it works", href="#see-here", className='button'),
             ], className='introduct-heading') 
 
+def create_introduct_overview_layout():
+    return html.Div([
+                html.Div([
+                    html.Div([
+                    html.Label("Ratings"),
+                    html.Div(id='overview-total-ratings', children=0)
+                    ], className = 'total-item'),
+                    html.Div([
+                        html.Label("Places"),
+                        html.Div(id='overview-total-places', children=0)
+                    ], className = 'total-item'),
+                    html.Div([
+                        html.Label("User"),
+                        html.Div(id='overview-total-user', children=0)
+                    ], className = 'total-item'),
+                ], className='contain2-layout'),
+            ])
+
 def create_dashboard_option_layout():
     return html.Div([
                 html.Div([
@@ -53,10 +71,6 @@ def create_dashboard_total_layout():
                     html.Div([
                     html.Label("Ratings"),
                     html.Div(id='total-ratings', children=0)
-                    ], className = 'total-item'),
-                    html.Div([
-                    html.Label("Reviews"),
-                    html.Div(id='total-reviews', children=0)
                     ], className = 'total-item'),
                     html.Div([
                         html.Label("Places"),

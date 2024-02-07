@@ -23,6 +23,9 @@ app = dash.Dash(__name__, suppress_callback_exceptions=True)
 # Layout của Dash App
 app.layout = html.Div([
     create_introduct_layout(),
+    html.Div([
+        create_introduct_overview_layout()
+    ], className="dashboard-container"),
     html.H1("Dashboard", className="centered-heading", id="see-here"),
     html.Div([
         create_dashboard_option_layout(),
@@ -50,8 +53,37 @@ app.layout = html.Div([
     html.Button('Add Row', id='adding-rows-btn', n_clicks=0),
 ], className='main-container')
 
-########### DASH BOARD ################################################################
-# Dashboard - 2. Callback to update dropdown options *************************
+########## BEGIN OF INTRODUCT TOTAL ############################################################
+@app.callback([Output('overview-total-ratings', 'children'),
+               Output('overview-total-places', 'children'),
+               Output('overview-total-user', 'children'),],
+              [Input('interval_db', 'n_intervals')])
+def overview_display(select_year='All', select_place='All'):
+    # Truy vấn để lấy dữ liệu từ MongoDB
+    query = {}
+    
+    # Đếm số lượng đánh giá (ratings), số lượng bình luận (reviews), số lượng địa điểm (places) và số lượng người dùng (users)
+    ratings = collection.count_documents(query)
+
+    places = len(collection.distinct("placeId", query))
+    users = len(collection.distinct("reviewerId", query))
+
+    return [ratings, places, users]
+########## END OF INTRODUCT TOTAL ############################################################
+
+
+########### BEGIN OF DASH BOARD ################################################################
+# Dashboard - 1. Callback to update dropdown options *************************
+def get_dropdown_options(field_name):
+    distinct_values = collection.distinct(field_name) 
+    options = [
+        {'label': str(value), 'value': str(value)}
+        for value in distinct_values
+    ]
+    
+    options.insert(0, {'label': 'All', 'value': 'All'})
+    return options
+
 @app.callback(
     Output('place-dropdown', 'options'),
     Input('interval_db', 'n_intervals'),
@@ -61,18 +93,16 @@ def update_dropdown(n_intervals):
 
     return dropdown_place_options
 
-# Dashboard - 1. Display Datatable with data from Mongo database *************************
+# Dashboard - 2. Display with data from Mongo database *************************
 @app.callback([Output('mongo-datatable', 'children'),
                Output('total-ratings', 'children'),
-               Output('total-reviews', 'children'),
                Output('total-places', 'children'),
                Output('total-user', 'children'),
                Output('dashboard-review-chart', 'figure'),
                Output('dashboarb-fig-star', 'figure'),],
-              [Input('interval_db', 'n_intervals'),
-               Input('year-dropdown', 'value'),
+              [Input('year-dropdown', 'value'),
                Input('place-dropdown', 'value')])
-def populate_datatable(n_intervals, select_year='All', select_place='All'):
+def dashboard_display(select_year='All', select_place='All'):
     # Truy vấn để lấy dữ liệu từ MongoDB
     query = {}
     
@@ -115,9 +145,6 @@ def populate_datatable(n_intervals, select_year='All', select_place='All'):
     
     # Đếm số lượng đánh giá (ratings), số lượng bình luận (reviews), số lượng địa điểm (places) và số lượng người dùng (users)
     ratings = collection.count_documents(query)
-    
-    review_query = {"$and": [query, {"text": {"$exists": True}}]}
-    reviews = collection.count_documents(review_query)
 
     places = len(collection.distinct("placeId", query))
     users = len(collection.distinct("reviewerId", query))
@@ -128,18 +155,7 @@ def populate_datatable(n_intervals, select_year='All', select_place='All'):
 
     fig_pie = draw_chart_reviews_by_star_dashboard(df)
     
-    return [detail_table, ratings, reviews, places, users, fig_bar, fig_pie]
-
-# Dashboard - 2. Function to get dropdown options from MongoDB based on publishedAtDate *************************
-def get_dropdown_options(field_name):
-    distinct_values = collection.distinct(field_name) 
-    options = [
-        {'label': str(value), 'value': str(value)}
-        for value in distinct_values
-    ]
-    
-    options.insert(0, {'label': 'All', 'value': 'All'})
-    return options
+    return [detail_table, ratings, places, users, fig_bar, fig_pie]
 
 ########## END OF DASHBOARD ################################################################################
 
