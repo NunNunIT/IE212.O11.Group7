@@ -15,13 +15,13 @@ from pymongo import MongoClient
 # Connect to local server
 client = MongoClient("mongodb://127.0.0.1:27017/")
 # Create database called animals
-mydbkha = client["animals"]
+mydbkha = client["ie212_o11_group7"]
 # Create Collectionkha (table) called shelterA
-collectionkha = mydbkha.RecommendData
+collectionkha = mydbkha.places
 # Lấy danh sách tên địa điểm và ID địa điểm từ MongoDB
-place_data = collectionkha.find({}, {"name": 1, "gPlusPlaceId": 1})
-place_names = [place["name"] for place in place_data]
-place_ids = [place["gPlusPlaceId"] for place in place_data]
+place_data = collectionkha.find({}, {"title": 1, "placeId": 1})
+place_names = [place["title"] for place in place_data]
+place_ids = [place["placeId"] for place in place_data]
 
 
 df_result = pd.read_csv('result_HCM1.csv',encoding='utf-8')
@@ -133,16 +133,16 @@ model.fit(tfidf_matrix)
 # Hàm khuyến nghị
 def recommend(gPlusPlaceId):
     # Lấy thông tin từ dataset dựa trên gPlusPlaceId
-    user_info = data[data['gPlusPlaceId'] == gPlusPlaceId][['name', 'categories', 'average_rating', 'location/lat',
-                                                          'location/lng', 'gPlusPlaceId','url']]
+    user_info = data[data['placeId'] == gPlusPlaceId][['title', 'categories', 'average_rating', 'location/lat',
+                                                          'location/lng', 'placeId','url']]
 
     # Lấy vị trí từ dataset dựa trên gPlusPlaceId
-    input_lat = data[data['gPlusPlaceId'] == gPlusPlaceId]['location/lat'].iloc[0]
-    input_lng = data[data['gPlusPlaceId'] == gPlusPlaceId]['location/lng'].iloc[0]
+    input_lat = data[data['placeId'] == gPlusPlaceId]['location/lat'].iloc[0]
+    input_lng = data[data['placeId'] == gPlusPlaceId]['location/lng'].iloc[0]
 
     input_coords = [input_lat, input_lng]
 
-    idx = data[data['gPlusPlaceId'] == gPlusPlaceId].index[0]
+    idx = data[data['placeId'] == gPlusPlaceId].index[0]
     distances, indices = model.kneighbors(tfidf_matrix[idx])
     recommended_places = data.loc[indices[0][1:]]
 
@@ -154,12 +154,12 @@ def recommend(gPlusPlaceId):
     recommended_places = recommended_places.sort_values(by='distance').drop(columns=['distance'])
 
     # Loại bỏ gPlusPlaceId nhập vào khỏi danh sách khuyến nghị
-    recommended_places = recommended_places[recommended_places['gPlusPlaceId'] != gPlusPlaceId]
+    recommended_places = recommended_places[recommended_places['placeId'] != gPlusPlaceId]
 
     # Sắp xếp theo average_rating giảm dần
     recommended_places = recommended_places.sort_values(by='average_rating', ascending=False)
 
-    return user_info, recommended_places[['name','categories','average_rating','location/lat','location/lng','gPlusPlaceId','url']]
+    return user_info, recommended_places[['title','categories','average_rating','location/lat','location/lng','placeId','url']]
 
 # average_ratings = df.groupby('gPlusPlaceId')['average_rating'].mean().reset_index()
 # merged_data = pd.merge(average_ratings, df[['gPlusPlaceId', 'gps', 'categories', 'name']], on='gPlusPlaceId', how='left')

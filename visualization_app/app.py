@@ -193,8 +193,8 @@ def save_data(n_clicks, data):
 )
 def update_idplace_options(selected_place_name):
     # Lấy lại danh sách tên địa điểm và ID địa điểm từ MongoDB (có thể cần cập nhật nếu dữ liệu thay đổi)
-    place_data = collection.find({"name": selected_place_name}, {"gPlusPlaceId": 1})
-    updated_place_ids = [place["gPlusPlaceId"] for place in place_data]
+    place_data = collectionkha.find({"title": selected_place_name}, {"placeId": 1})
+    updated_place_ids = [place["placeId"] for place in place_data]
 
     # Tạo danh sách tùy chọn mới cho dropdown PlaceID
     dropdown_options = [{'label': place_id, 'value': place_id} for place_id in updated_place_ids]
