@@ -45,11 +45,21 @@ Dữ liệu kết quả bao gồm:
 ```
 git clone https://github.com/NunNunIT/IE212.O11.Group7.git  
 ```
-### B2: Chạy tệp 'requirements.txt' để cài đặt các package cần thiết
+### B2: Tải dữ liệu về thư mục ```data_vi_tphcm```
+Truy cập https://drive.google.com/drive/folders/1xjVmr87n6hHU5PZyAGD47Zci6-MUhJgQ và tải 3 file về
+
+Đảm bảo rằng được lưu đúng thư mục ```data_vi_tphcm```
+
+Kết quả sẽ được như này
+
+![image](https://github.com/NunNunIT/IE212.O11.Group7/assets/145759907/6c809140-f78f-4f03-a69f-cdbfc6658154)
+
+
+### B3: Chạy tệp 'requirements.txt' để cài đặt các package cần thiết
 ```
 pip install -r requirements.txt
 ```
-### B3: Xây dựng cơ sở dữ liệu trên mongoDB 
+### B4: Xây dựng cơ sở dữ liệu trên mongoDB 
 Truy cập vào thư mục ```data_result```
 ```
 cd data_result
@@ -61,7 +71,7 @@ python mongoDB.py
 Líc này ta sẽ được cơ sở dữ liệu như sau
 ![image](https://github.com/NunNunIT/IE212.O11.Group7/assets/145759907/019e7fbc-efc6-403b-978b-0ee7c640fb13)
 
-### B4: Chạy zookeeper, server kafka
+### B5: Chạy zookeeper, server kafka
 * cd đến thư mục kafka, sau đó thực hiện câu lệnh sau
 ```
 bin\windows\zookeeper-server-start.bat config\zookeeper.properties
@@ -71,7 +81,7 @@ bin\windows\zookeeper-server-start.bat config\zookeeper.properties
 bin\windows\kafka-server-start.bat config\server.properties
 ```
 
-### B4: Chạy producer và consumer
+### B6: Chạy producer và consumer
 - Truy cập vào thư mục ```src```
 - Mở file ```producer.ipynb``` và chạy hết tất cả các cell
     - Lúc này, producer sẽ gửi được các dữ liệu như sau
@@ -80,7 +90,7 @@ bin\windows\kafka-server-start.bat config\server.properties
 - Mở file ```consumer.ipynb``` và chạy hết tất cả các cell
     - Lúc này, producer sẽ nhận dữ liệu từ producer và xử lý. Sau đó sẽ thêm records mới vào mongoDB collection ```reviews```
 
-### B6: Visualization
+### B7: Visualization
 - Truy cập vào thư mục ```visualization_app```
 ```
 cd visualization_app
@@ -90,7 +100,7 @@ cd visualization_app
 python app.py 
 ```
 Lúc này đây, trang web đã được hoạt động
-### B7: Mở website có 2 cách 
+### B8: Mở website có 2 cách 
 * Cách 1: Ctrl + Click vào đường link http://127.0.0.1:8050/ trên terminal
 * Cách 2: Mở trình duyệt bất kỳ và dán đường dẫn sau http://127.0.0.1:8050/
 
