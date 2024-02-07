@@ -50,7 +50,7 @@ def combine_negation(tokens):
     return combined_tokens
 
 
-def create_fig_sentiments(data_list, color_c):
+def create_fig_sentiments(data_list, color_c, text):
     data_list_combined = []
     for sentence in data_list:
         tokens = nltk.word_tokenize(sentence)
@@ -66,5 +66,5 @@ def create_fig_sentiments(data_list, color_c):
     words, frequencies = zip(*most_common_words)
     fig = go.Figure(data=[go.Bar(x=words, y=frequencies, text=frequencies,
             textposition='auto', marker_color=color_c)]) # Chú ý marker_color ở đây
-    fig.update_layout(title_text='Most Common Words', xaxis_title="Words", yaxis_title="Frequency")
+    fig.update_layout(title_text=text, xaxis_title="Words", yaxis_title="Frequency")
     return fig

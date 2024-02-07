@@ -9,6 +9,7 @@ from dashboard_layout import *
 from recomended_layout import *
 from sentiments_layout import *
 from gensim.utils import simple_preprocess
+from datetime import datetime
 
 # Connect to local server
 client = MongoClient("mongodb://127.0.0.1:27017/")
@@ -24,6 +25,8 @@ app = dash.Dash(__name__, suppress_callback_exceptions=True)
 app.layout = html.Div([
     create_introduct_layout(),
     html.H1("Overview", className="centered-heading", id="see-here"),
+    html.Div("Live Streaming", className="live-green-text"),
+    html.Div(id='live-stream', className="live-stream-text", children=[]),
     html.Div([
         create_introduct_overview_layout()
     ], className="dashboard-container"),
@@ -80,6 +83,16 @@ def overview_display(select_year='All', select_place='All'):
     users = len(collection_reviews.distinct("reviewerId", query))
 
     return [ratings, places, users]
+
+@app.callback(
+    Output("live-stream", "children"),
+    [Input('interval_db', 'n_intervals')]
+)
+def update_time(n_clicks):
+    if n_clicks:
+        return f"(Last updated at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')})"
+
+
 ########## END OF INTRODUCT TOTAL ############################################################
 
 
@@ -296,8 +309,8 @@ def update_sentiments(select_year='All', select_place='All'):
     cleaned_positive_sentences = [' '.join(simple_preprocess(sentence, min_len=2, max_len=15)) for sentence in positive_sentences]
 
 
-    fig_negative = create_fig_sentiments(cleaned_negative_sentences, 'lightsalmon')
-    fig_positive = create_fig_sentiments(cleaned_positive_sentences, 'lightsalmon')
+    fig_negative = create_fig_sentiments(cleaned_negative_sentences, '#f86134', 'Negative')
+    fig_positive = create_fig_sentiments(cleaned_positive_sentences, '#004ebe', 'Positive')
 
     return [fig_positive, fig_negative]
 ########## BEGIN OF SENTIMENTS ################################################################################

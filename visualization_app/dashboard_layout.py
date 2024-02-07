@@ -30,15 +30,19 @@ def create_introduct_overview_layout():
                 html.Div([
                     html.Div([
                     html.Label("Ratings"),
-                    html.Div(id='overview-total-ratings', children=0)
+                    html.Div(id='overview-total-ratings', children=[])
                     ], className = 'total-item'),
                     html.Div([
                         html.Label("Places"),
-                        html.Div(id='overview-total-places', children=0)
+                        html.Div(id='overview-total-places', children=[])
                     ], className = 'total-item'),
                     html.Div([
                         html.Label("User"),
-                        html.Div(id='overview-total-user', children=0)
+                        html.Div(id='overview-total-user', children=[])
+                    ], className = 'total-item'),
+                    html.Div([
+                        html.Label("MSE"),
+                        html.Div(id='MSE', children=1.7)
                     ], className = 'total-item'),
                 ], className='contain2-layout'),
             ])

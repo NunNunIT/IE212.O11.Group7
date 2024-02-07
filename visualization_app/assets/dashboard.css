@@ -52,3 +52,15 @@
 .contain2-layout>div {
     /* width: 100%; */
 }
+
+.live-green-text{
+    color: #9fda3a;
+    font-weight: bold;
+    font-size:24px;
+    text-align: center;
+}
+
+.live-stream-text {
+    font-size:24px;
+    text-align: center;
+}
