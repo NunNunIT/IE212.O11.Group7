@@ -18,6 +18,7 @@ Trong đồ án này, chúng tôi thực hiện xây dựng hệ khuyến nghị
 
 ## Bộ dữ liệu
 Dữ liệu được thu thập bằng công cụ có sẵn trên trang web https://console.apify.com/
+
 Sử dụng 2 công cụ:
 - Lấy dữ liệu địa điểm: ```Google Maps Scraper```
 - Lấy dữ liệu đánh giá: ```Google Maps Reviews Scraper```
