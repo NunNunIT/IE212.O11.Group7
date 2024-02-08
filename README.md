@@ -41,7 +41,11 @@ Dữ liệu có thể tải tại đây: https://drive.google.com/drive/folders/
 * Python
 * MongoDB
 * Kafka
-* 
+-----
+***Nếu như không có kafka hoặc không cần thực hiện việc truyền nhận dữ liệu mới, chỉ cần thực hiện B1, B2, B3, B4, B7, B8 (bỏ bước B5, B6), app visualzation vẫn hoạt động bình thường (app chỉ không nhận được dữ liệu mới mà thôi)***
+
+-----
+
 ### B1: Clone repo này về máy với câu lệnh sau:
 ```
 git clone https://github.com/NunNunIT/IE212.O11.Group7.git  
@@ -108,8 +112,7 @@ Lúc này đây, trang web đã được hoạt động
 * Cách 1: Ctrl + Click vào đường link http://127.0.0.1:8050/ trên terminal
 * Cách 2: Mở trình duyệt bất kỳ và dán đường dẫn sau http://127.0.0.1:8050/
 
-## Ảnh app visualization
+# Ảnh app visualization
 ![visualization app](https://github.com/NunNunIT/IE212.O11.Group7/assets/145759907/3daf00a8-178c-416d-b374-5234efa50556)
-
 
 # Thanks
