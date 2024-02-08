@@ -83,13 +83,14 @@ bin\windows\kafka-server-start.bat config\server.properties
 ```
 
 ### B6: Chạy producer và consumer
-- Truy cập vào thư mục ```src```
+- Truy cập vào thư mục ```streaming```
 - Mở file ```producer.ipynb``` và chạy hết tất cả các cell
     - Lúc này, producer sẽ gửi được các dữ liệu như sau
 ![image](https://github.com/NunNunIT/IE212.O11.Group7/assets/145759907/d382b58e-7cbf-4a11-92dd-842648b7e4f3)
 
 - Mở file ```consumer.ipynb``` và chạy hết tất cả các cell
     - Lúc này, producer sẽ nhận dữ liệu từ producer và xử lý. Sau đó sẽ thêm records mới vào mongoDB collection ```reviews```
+![image](https://github.com/NunNunIT/IE212.O11.Group7/assets/145759907/8cbd6b56-07ec-4f9e-891e-04f2b6ee791c)
 
 ### B7: Visualization
 - Truy cập vào thư mục ```visualization_app```
@@ -106,8 +107,6 @@ Lúc này đây, trang web đã được hoạt động
 * Cách 2: Mở trình duyệt bất kỳ và dán đường dẫn sau http://127.0.0.1:8050/
 
 ## Ảnh app visualization
-![image](https://github.com/NunNunIT/IE212.O11.Group7/assets/145759907/2587aadb-0538-44e0-80ca-844269fc15c0)
-
-# THAM KHẢO
+![Screenshot_8-2-2024_14731_127 0 0 1](https://github.com/NunNunIT/IE212.O11.Group7/assets/145759907/6bb6e810-4f24-49db-9db2-7fe6d03a45ab)
 
 # Thanks
