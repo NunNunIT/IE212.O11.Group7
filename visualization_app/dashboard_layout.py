@@ -75,10 +75,14 @@ def create_info_layout():
                 html.Div(id='info-name', className = 'bold-text', children=[])
                 ], className = 'row-item'),
                 html.Div([
+                    html.Label("AVG Predict Rating:  ", className = 'blue-text'),
+                    html.Div(id='info-avg-rating', className = 'blue-text', children=[])
+                ], className = 'row-item'),
+                html.Div([
                     html.Div(id='info-address', children=[])
                 ], className = 'row-item'),
                 html.Div([
-                    html.Label("Categories:  "),
+                    html.Label("Categories:  ", className = "label-info"),
                     html.Div(id='info-categories', children=[])
                 ], className = 'row-item'),
             ], className='row-layout')

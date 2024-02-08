@@ -22,8 +22,8 @@ def create_sentiment_option_layout():
                     html.Label('Places'),
                     dcc.Dropdown(
                         id='place-sentiment-dropdown',
-                        options= [{'label': 'ChIJqSWgMcYvdTEReOwrjRd36W8', 'value': 'ChIJqSWgMcYvdTEReOwrjRd36W8'}],
-                        value= 'ChIJqSWgMcYvdTEReOwrjRd36W8',
+                        options= [{'label': 'ChIJ-cMNqQApdTERLoYJepwMbQM', 'value': 'ChIJ-cMNqQApdTERLoYJepwMbQM'}],
+                        value= 'ChIJ-cMNqQApdTERLoYJepwMbQM',
                         placeholder='Chọn địa điểm',  # Nhãn placeholder
                     ),
                 ], className = 'dropdown-item'),
@@ -39,13 +39,14 @@ with open("vietnamese-stopwords.txt", "r", encoding="utf-8") as file:
 
 # Định nghĩa hàm combine_negation
 def combine_negation(tokens):
-    negation_words = {"không", "ko", "k", "kh", "không nên", "k nên", "ko nên", "chưa", "có"}
     combined_tokens = []
     i = 0
     while i < len(tokens):
         if i > 0 and i < len(tokens) - 1:
             combined_tokens.append(tokens[i - 1] + "_" + tokens[i] + "_" + tokens[i + 1])
             combined_tokens.append(tokens[i])
+            combined_tokens.append(tokens[i - 1] + "_" + tokens[i])
+            combined_tokens.append(tokens[i] + "_" + tokens[i + 1])
         i += 1
     return combined_tokens
 
@@ -56,6 +57,7 @@ def create_fig_sentiments(data_list, color_c, text):
         tokens = nltk.word_tokenize(sentence)
         tokens = [token.lower() for token in tokens if token.lower() not in stop_words]  # Loại bỏ stop words
         combined_tokens = combine_negation(tokens)
+        combined_tokens = [token for token in combined_tokens if token not in stop_words]
         data_list_combined.extend(combined_tokens)
     
     # Đếm tần suất xuất hiện của các từ

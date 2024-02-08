@@ -119,7 +119,8 @@ def update_dropdown(n_intervals):
 @app.callback(
     [Output('info-name', 'children'),
      Output('info-address', 'children'),
-     Output('info-categories', 'children')],
+     Output('info-categories', 'children'),
+     Output('info-avg-rating', 'children')],
     [Input('place-dropdown', 'value')]  # Thêm input component cần thiết nếu cần
 )
 def update_info(select_place):
@@ -127,7 +128,7 @@ def update_info(select_place):
     query = {"placeId": select_place}
 
     # Thực hiện truy vấn và lấy dữ liệu từ MongoDB
-    result = collectionkha.find_one(query, {"title": 1, "categories": 1, "address": 1})
+    result = collectionkha.find_one(query, {"title": 1, "categories": 1, "address": 1, "average_predict_rating": 1})
 
     # Kiểm tra nếu không tìm thấy dữ liệu
     if result is None:
@@ -137,9 +138,10 @@ def update_info(select_place):
     name = result.get("title", "")
     categories = result.get("categories", "")
     address = result.get("address", "")
+    avg_predict_rating = result.get("average_predict_rating", "")
 
     # Trả về các giá trị tương ứng
-    return name, address, categories
+    return name, address, categories, avg_predict_rating
 
 # Dashboard - 2. Display with data from Mongo database *************************
 @app.callback([Output('mongo-datatable', 'children'),

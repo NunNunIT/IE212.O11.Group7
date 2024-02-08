@@ -72,8 +72,8 @@
     align-items: center;  /* Căn giữa các thành phần theo chiều dọc */
 }
 
-.row-item label{
-
+.label-info{
+    padding-right: 12px;
 }
 
 /* CSS cho các row-item nằm dọc */
@@ -87,4 +87,11 @@
     padding-top: 12px;
     font-weight: bold;
     font-size: 24px;
+}
+
+.blue-text {
+    color: #002f72;
+    font-weight: bold;
+    font-size: 24px;
+    padding-right: 12px;
 }

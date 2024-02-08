@@ -133,7 +133,7 @@ model.fit(tfidf_matrix)
 # Hàm khuyến nghị
 def recommend(gPlusPlaceId, num_recommendations=10):
     # Lấy thông tin từ dataset dựa trên gPlusPlaceId
-    user_info = data[data['placeId'] == gPlusPlaceId][['title', 'categories', 'average_rating', 'location/lat',
+    user_info = data[data['placeId'] == gPlusPlaceId][['title', 'categories', 'average_predict_rating', 'location/lat',
                                                           'location/lng', 'placeId','url']]
 
     # Lấy vị trí từ dataset dựa trên gPlusPlaceId
@@ -157,13 +157,13 @@ def recommend(gPlusPlaceId, num_recommendations=10):
     recommended_places = recommended_places[recommended_places['placeId'] != gPlusPlaceId]
 
     # Sắp xếp theo average_rating giảm dần
-    recommended_places = recommended_places.sort_values(by='average_rating', ascending=False)
+    recommended_places = recommended_places.sort_values(by='average_predict_rating', ascending=False)
 
     # Chỉ lấy num_recommendations đầu tiên
     recommended_places = recommended_places.head(num_recommendations)
 
-    return user_info, recommended_places[['title','categories','average_rating','location/lat','location/lng','placeId','url']]
-# average_ratings = df.groupby('gPlusPlaceId')['average_rating'].mean().reset_index()
+    return user_info, recommended_places[['title','categories','average_predict_rating','location/lat','location/lng','placeId','url']]
+# average_ratings = df.groupby('gPlusPlaceId')['average_predict_rating'].mean().reset_index()
 # merged_data = pd.merge(average_ratings, df[['gPlusPlaceId', 'gps', 'categories', 'name']], on='gPlusPlaceId', how='left')
 # df1 = merged_data.drop_duplicates(subset='gPlusPlaceId', keep='first')
 
@@ -174,7 +174,7 @@ def recommendation(placeid):
         writer = csv.writer(file)
 
         # Ghi header
-        writer.writerow(['name', 'categories', 'average_rating', 'location/lat', 'location/lng', 'gPlusPlaceId','url'])
+        writer.writerow(['name', 'categories', 'average_predict_rating', 'location/lat', 'location/lng', 'gPlusPlaceId','url'])
 
         # Ghi user_info vào tệp
         writer.writerow(user_info.values.flatten())
