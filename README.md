@@ -49,7 +49,8 @@ git clone https://github.com/NunNunIT/IE212.O11.Group7.git
 ### B2: Tải dữ liệu về thư mục ```data_vi_tphcm```
 ** Có thể bỏ qua bước này, nếu như trong thư mục ```data_vi_tphcm``` đã có file ```reviews_HCM_after_31_01_2024.jsonl.gz``` **
 
-Truy cập https://drive.google.com/drive/folders/1cPzsr6DJnKSKsKvxrmfRsA0HQgQwn6SQ?usp=drive_link và tải 3 file về
+Truy cập https://drive.google.com/drive/folders/1cPzsr6DJnKSKsKvxrmfRsA0HQgQwn6SQ?usp=drive_link và tải file ```reviews_HCM_after_31_01_2024.jsonl.gz``` về.
+
 Đảm bảo rằng được lưu đúng thư mục ```data_vi_tphcm```
 
 Kết quả sẽ được như này
