@@ -109,6 +109,7 @@ Lúc này đây, trang web đã được hoạt động
 * Cách 2: Mở trình duyệt bất kỳ và dán đường dẫn sau http://127.0.0.1:8050/
 
 ## Ảnh app visualization
-![Screenshot_8-2-2024_14731_127 0 0 1](https://github.com/NunNunIT/IE212.O11.Group7/assets/145759907/6bb6e810-4f24-49db-9db2-7fe6d03a45ab)
+![visualization app](https://github.com/NunNunIT/IE212.O11.Group7/assets/145759907/3daf00a8-178c-416d-b374-5234efa50556)
+
 
 # Thanks
