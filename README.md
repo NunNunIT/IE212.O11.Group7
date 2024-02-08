@@ -90,6 +90,7 @@ bin\windows\kafka-server-start.bat config\server.properties
 
 - Mở file ```consumer.ipynb``` và chạy hết tất cả các cell
     - Lúc này, producer sẽ nhận dữ liệu từ producer và xử lý. Sau đó sẽ thêm records mới vào mongoDB collection ```reviews```
+![image](https://github.com/NunNunIT/IE212.O11.Group7/assets/145759907/8cbd6b56-07ec-4f9e-891e-04f2b6ee791c)
 
 ### B7: Visualization
 - Truy cập vào thư mục ```visualization_app```
