@@ -109,6 +109,4 @@ Lúc này đây, trang web đã được hoạt động
 ## Ảnh app visualization
 ![Screenshot_8-2-2024_14731_127 0 0 1](https://github.com/NunNunIT/IE212.O11.Group7/assets/145759907/6bb6e810-4f24-49db-9db2-7fe6d03a45ab)
 
-# THAM KHẢO
-
 # Thanks
