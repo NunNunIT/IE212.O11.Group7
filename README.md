@@ -16,6 +16,11 @@
 ##  Giới thiệu - Introduction
 Trong đồ án này, chúng tôi thực hiện xây dựng hệ khuyến nghị nhằm gợi ý địa điểm dựa trên dự đoán điểm đánh giá của các nhận xét trên Google. Chúng tôi sử dụng tập dữ liệu tự thu thập trên các địa bàn ở Thành Phố Hồ Chí Minh để thực hiện và huấn luyện mô hình. Chúng tôi sử dụng mô hình hồi quy để huấn luyện mô hình sau đó dữ liệu này sẽ qua Spark Streaming và Spark SQL để xử lý, truy vấn và trích xuất dữ liệu, và được lưu vào hệ quản trị cơ sở dữ liệu MongoDB. Sau sử dụng mô hình k-Nearest Neighbors (kNN) với thuật toán "Brute Force" để tìm các địa điểm gần nhất.
 
+-----
+Xem sản phẩm tại đây: https://drive.google.com/drive/u/0/folders/1cPzsr6DJnKSKsKvxrmfRsA0HQgQwn6SQ
+
+-----
+
 ## Bộ dữ liệu
 Dữ liệu được thu thập bằng công cụ có sẵn trên trang web https://console.apify.com/
 
